@@ -1,7 +1,7 @@
 # MutCleaner
 
 [![License badge](https://img.shields.io/badge/License-BSD_3--Clause-yellow?logo=opensourceinitiative&logoColor=white)](https://github.com/xulab-research/MutCleaner/blob/main/LICENSE)
-[![PyPI version badge](https://img.shields.io/pypi/v/mutcleaner?logo=python&logoColor=white&color=orange)](https://pypi.org/project/mutcleaner/)
+[![PyPI version badge](https://img.shields.io/pypi/v/mutcleaner.svg?logo=python&logoColor=white&color=orange)](https://pypi.org/project/mutcleaner/)
 [![Docs](https://github.com/xulab-research/MutCleaner/actions/workflows/docs.yml/badge.svg)](https://xulab-research.github.io/MutCleaner/)
 
 MutCleaner is an extensible Python toolkit for cleaning and standardizing biological mutation datasets, integrating dataset-specific cleaning pipelines with core abstractions for protein, nucleotide, and codon-level mutation representations.
