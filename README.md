@@ -53,19 +53,47 @@ pip install -e ".[dev]"
 ## Package Structure
 ```text
 mutcleaner/
-├── cleaners/
-├── core/
-│   ├── alphabet.py
-│   ├── codon.py
-│   ├── constants.py
-│   ├── dataset.py
-│   ├── mutation.py
-│   ├── pipeline.py
-│   ├── sequence.py
-│   └── types.py
-└── utils/
+├── cleaners/                # Reusable cleaners and dataset-specific pipelines
+│   ├── basic_cleaners.py    # Reusable basic cleaning functions
+│   ├── base_config.py       # Shared cleaner configuration
+│   └── *_cleaner.py         # Dataset-specific cleaning pipelines
+├── core/                    # Core data structures and processing logic
+│   ├── alphabet.py          # Biological alphabet definitions and validation
+│   ├── codon.py             # Codon table and sequence translation utilities
+│   ├── constants.py         # Shared biological constants
+│   ├── dataset.py           # Standard dataset abstraction and export logic
+│   ├── mutation.py          # Mutation parsing, representation, and validation
+│   ├── pipeline.py          # Reusable data cleaning pipeline framework
+│   ├── sequence.py          # DNA, RNA, and protein sequence abstractions
+│   └── types.py             # Shared type aliases and annotations
+└── utils/                   # General helper functions for downloading and I/O
 ```
+### Module Overview
+#### mutcleaner.cleaners
 
+The `cleaners` module provides both reusable cleaning functions and predefined dataset-specific cleaning pipelines.
+
+`basic_cleaners.py` contains general-purpose cleaning functions that can be reused across different datasets, such as column checking, missing value handling, sequence validation, mutation validation, and common formatting operations.
+`base_config.py` defines shared configuration used by dataset cleaners, such as common column names, required fields, and reusable cleaner settings.
+`*_cleaner.py` files define dataset-specific cleaning pipelines. Each file is designed for a particular dataset or benchmark and combines reusable cleaning functions into a complete workflow.
+#### mutcleaner.core
+
+The `core` module contains the fundamental data structures and processing logic used throughout MutCleaner.
+
+`alphabet.py` defines biological alphabets and validation rules for DNA, RNA, and protein sequences.
+`codon.py` provides codon table utilities and sequence translation functionality.
+`constants.py` stores shared biological constants, such as amino acid symbols, nucleotide symbols, complements, and stop codon definitions.
+`dataset.py` defines the standard dataset abstraction used to store, manage, validate, and export cleaned mutation datasets.
+`mutation.py` provides mutation parsing, mutation representation, and mutation validation logic.
+`pipeline.py` defines the reusable data cleaning pipeline framework, including pipeline steps, execution order, and artifact tracking.
+`sequence.py` defines biological sequence abstractions, including DNA, RNA, and protein sequence classes.
+`types.py` stores shared type aliases and annotations used across the package.
+
+#### mutcleaner.utils
+
+The `utils` module contains helper functions that support common operations outside the core cleaning logic.
+
+It includes utilities for downloading source files, handling paths, extracting files, checking file existence, and managing common input/output operations.
 ## Quick Start
 
 See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/user_guide/cleaners.html) for more examples.
