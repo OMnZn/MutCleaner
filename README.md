@@ -62,9 +62,9 @@ mutcleaner/
 │   ├── codon.py             # Codon table and sequence translation utilities
 │   ├── constants.py         # Shared biological constants
 │   ├── dataset.py           # Standard dataset abstraction and export logic
-│   ├── mutation.py          # Mutation parsing, representation, and validation
+│   ├── mutation.py          # Mutation parsing, representation and validation
 │   ├── pipeline.py          # Reusable data cleaning pipeline framework
-│   ├── sequence.py          # DNA, RNA, and protein sequence abstractions
+│   ├── sequence.py          # DNA, RNA and protein sequence abstractions
 │   └── types.py             # Shared type aliases and annotations
 └── utils/                   # General helper functions for downloading and I/O
 ```
