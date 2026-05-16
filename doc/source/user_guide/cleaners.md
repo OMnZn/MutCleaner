@@ -5,14 +5,14 @@
 This guide provides usage examples for data cleaning modules organized by dataset source:
 
 - [**Human Domainome Dataset**](#human-domainome-dataset): Site-saturation mutagenesis of 500 human protein domains.
-- [**ProteinGym DMS Substitutions Dataset**](#proteingym-dms-substitutions-dataset): Large-Scale Benchmarks for Protein Design and Fitness Prediction.
+- [**ProteinGym DMS Substitutions Dataset**](#proteingym-dms-substitutions-dataset): Large-scale benchmarks for protein design and fitness prediction.
 - [**cDNA Proteolysis Dataset**](#cdna-proteolysis-dataset): Mega-scale experimental analysis of protein folding stability in biology and design.
-- [**ddG Dataset**](#ddg-dataset): A collection of datasets providing single- and multiple-mutant measurements, labeled by thermodynamic parameters ΔΔG.
-- [**dTm Dataset**](#dtm-dataset)A collection of datasets providing single- and multiple-mutant measurements, labeled by thermodynamic parameters ΔTm.
+- [**ddG Dataset**](#ddg-dataset): A collection of datasets providing single- and multiple-mutant measurements, labeled by the thermodynamic parameter ΔΔG.
+- [**dTm Dataset**](#dtm-dataset): A collection of datasets providing single- and multiple-mutant measurements, labeled by the thermodynamic parameter ΔTm.
 - [**ArchStabMS1E10 Epistasis Dataset**](#archstabms1e10-epistasis-dataset): High-order multi-mutant libraries (“1e10”) measuring protein stability for GRB2-SH3 and SRC.
 - [**Antitoxin ParD3 Epistasis Dataset**](#antitoxin-pard3-epistasis-dataset): The antitoxin ParD3 3-position library is a combinatorially exhaustive dataset of 8,000 variants demonstrating that simple, independent per-residue mutation preferences are sufficient to almost perfectly predict combinatorial protein fitness.
-- [**TrpB Epistasis Dataset**](#trpb-epistasis-dataset): a combinatorially complete sequence-fitness landscape comprising 160,000 variants across four active-site residues of the enzyme tryptophan synthase, capturing significant epistatic interactions to serve as a benchmark for model-guided enzyme engineering.
-- [**Human Myoglobin Epistasis Dataset**](#human-myoglobin-epistasis-dataset): A deep mutational scanning library detailing the expression fitness scores for near-comprehensive single-codon and small-fraction double-codon mutations in yeast surface-displayed human myoglobin, which was used to train machine learning models for predicting epistatic effects and discovering stability-enhancing variants.
+- [**TrpB Epistasis Dataset**](#trpb-epistasis-dataset): A combinatorially complete sequence-fitness landscape comprising 160,000 variants across four active-site residues of the enzyme tryptophan synthase, capturing significant epistatic interactions to serve as a benchmark for model-guided enzyme engineering.
+- [**Human Myoglobin Epistasis Dataset**](#human-myoglobin-epistasis-dataset): A deep mutational scanning library detailing the expression fitness scores for near-comprehensive single-codon mutations and a small fraction of double-codon mutations in yeast surface-displayed human myoglobin, which was used to train machine learning models for predicting epistatic effects and discovering stability-enhancing variants.
 - [**CTXM Epistasis Dataset**](#ctxm-epistasis-dataset): A large-scale pairwise deep mutational scanning dataset of the CTX-M-14 β-lactamase active site, covering 49,096 double mutants across 17 active-site residues. Fitness measurements were obtained from functional selection under ampicillin and cefotaxime, providing substrate-dependent fitness landscapes for studying epistasis, compensatory mutations, and antibiotic resistance prediction.
 - [**RBD-ACE2 Dataset**](#rbd-ace2-dataset): SARS-CoV-2 RBD sequences with ACE2 binding affinity scores, labeled by `log10Ka` where higher values indicate stronger ACE2 binding affinity.
 - [**RBD-Antibody Dataset**](#rbd-antibody-dataset): SARS-CoV-2 RBD antibody escape data with `score` computed as the negative logarithm of escape. Higher scores indicate weaker escape, reflecting better binding capacity.
@@ -30,14 +30,37 @@ pip install mutcleaner
 
 ## Common Workflow
 
+### Workflow Overview
+
+```mermaid
+flowchart LR
+    A["Download / prepare<br/>source dataset"] --> B["Create<br/>cleaner"]
+    B --> C["Run<br/>cleaning pipeline"]
+    C --> D["Save<br/>cleaned dataset"]
+    D --> E["Use for<br/>downstream analysis"]
+
+    C --> F["Save<br/>cleaning artifacts"]
+    F --> G["Review<br/>filtered records"]
+```
+### Workflow Steps
+
 Most dataset cleaners follow the same workflow:
 
-1. Download or prepare the source file.
-2. Create the dataset-specific cleaner.
-3. Run the cleaning pipeline.
-4. Use the returned standardized dataset for downstream analysis.
+1. Download or prepare the source dataset.
+2. Create a dataset-specific cleaning pipeline with `create_*_cleaner`.
+3. Run the cleaning pipeline with `clean_*_dataset`.
+4. Save the cleaned standardized dataset.
+5. Save cleaning artifacts for reproducibility.
+6. Optionally export cleaning artifacts to CSV files for inspection.
 
-The examples below use dataset-specific `create_*_cleaner` and `clean_*_dataset` functions, but the overall calling pattern is consistent across supported datasets.
+### Returned Objects
+
+The cleaning process usually returns two objects:
+
+- `cleaning_pipeline`: the fitted cleaning pipeline, including intermediate cleaning artifacts.
+- `cleaned_dataset`: the standardized cleaned dataset that can be saved and used for downstream analysis.
+
+
 
 ---
 
@@ -49,28 +72,45 @@ The examples below use dataset-specific `create_*_cleaner` and `clean_*_dataset`
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_human_domainome_source_file` for details):
 ```python
 from mutcleaner import download_human_domainome_source_file
-filepaths = download_human_domainome_source_file("path/to/target/folder")
+
+file_path = download_human_domainome_source_file("dataset/Human_Domainome_Dataset")
 ```
-
-Alternatively, you can download it from [Nature](https://www.nature.com/articles/s41586-024-08370-4) or [Hugging Face](https://huggingface.co/datasets/xulab-research/mutcleaner/tree/main/human_domainome) (See `SupplementaryTable2.txt`)
-
-The Hugging Face dataset already includes the reference FASTA. If you are not using that source, you’ll need to provide the FASTA yourself (i.e., the reviewed Human (9606) proteome from  [UNIPROT](https://rest.uniprot.org/uniprotkb/stream?download=true&format=fasta&query=%28*%29+AND+%28model_organism%3A9606%29+AND+%28reviewed%3Atrue%29)).
 
 #### Basic Usage
 
 **Cleaning Pipeline**
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
-    create_human_domainome_sup2_cleaner, 
-    clean_human_domainome_sup2_dataset
+    create_human_domainome_sup2_cleaner,
+    clean_human_domainome_sup2_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/Human_Domainome_Dataset/SupplementaryTable2.txt")
+artifact_path = Path("../logs/Human_Domainome_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/Human_Domainome_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
 # Clean data
-hd_cleaning_pipeline = create_human_domainome_sup2_cleaner(dataset_filepath)
-hd_cleaning_pipeline, hd_dataset = clean_human_domainome_sup2_dataset(hd_cleaning_pipeline)
+hd_cleaning_pipeline = create_human_domainome_sup2_cleaner(dataset_file_path)
+hd_cleaning_pipeline, hd_dataset = clean_human_domainome_sup2_dataset(
+    hd_cleaning_pipeline
+)
+
+# Save data
+hd_dataset.save("../outputs/cleaned_Human_Domainome_Dataset")
+hd_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts and read the object
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -80,29 +120,48 @@ See {py:class}`mutcleaner.cleaners.HumanDomainomeSup2CleanerConfig` for details.
 ### ProteinGym DMS Substitutions Dataset
 
 #### File Preparation
-You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_protein_gym_source_file` for details):
+You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_proteingym_source_file` for details):
 ```python
-from mutcleaner import download_protein_gym_source_file
-filepaths = download_protein_gym_source_file("path/to/target/folder")
-```
+from mutcleaner import download_proteingym_source_file
 
-Alternatively, you can download it from [ProteinGym](https://marks.hms.harvard.edu/proteingym/ProteinGym_v1.3/DMS_ProteinGym_substitutions.zip) or [Hugging Face](https://huggingface.co/datasets/xulab-research/mutcleaner/tree/main/ProteinGym_DMS_substitutions)
+file_paths = download_proteingym_source_file("../dataset/ProteinGym_DMS_Substitutions_Dataset")
+```
 
 #### Basic Usage
 
 **Cleaning Pipeline**
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
-    create_protein_gym_cleaner,
-    clean_protein_gym_dataset
+    create_proteingym_dms_substitutions_cleaner,
+    clean_proteingym_dms_substitutions_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/ProteinGym_DMS_Substitutions_Dataset/ProteinGym_DMS_substitutions.zip")
+artifact_path = Path("../logs/ProteinGym_DMS_Substitutions_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/ProteinGym_DMS_Substitutions_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
 # Clean data
-pg_cleaning_pipeline = create_protein_gym_cleaner(dataset_filepath)
-pg_cleaning_pipeline, pg_dataset = clean_protein_gym_dataset(pg_cleaning_pipeline)
+pg_cleaning_pipeline = create_proteingym_dms_substitutions_cleaner(dataset_file_path)
+pg_cleaning_pipeline, pg_dataset = clean_proteingym_dms_substitutions_dataset(
+    pg_cleaning_pipeline
+)
+
+# Save data
+pg_dataset.save("../outputs/cleaned_ProteinGym_DMS_Substitutions_Dataset")
+pg_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts and read the object
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -115,52 +174,90 @@ See {py:class}`mutcleaner.cleaners.ProteinGymCleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_cdna_proteolysis_source_file` for details):
 ```python
 from mutcleaner import download_cdna_proteolysis_source_file
-filepaths = download_cdna_proteolysis_source_file("path/to/target/folder")
-```
 
-Alternatively, you can download it from [Zenodo](https://zenodo.org/records/7992926) ("'Tsuboyama2023_Dataset2_Dataset3_20230416.csv' in 'Processed_K50_dG_datasets.zip'") or [Hugging Face](https://huggingface.co/datasets/xulab-research/mutcleaner/tree/main/cDNA_proteolysis)
+file_paths = download_cdna_proteolysis_source_file("path/to/target/folder")
+```
 
 #### ΔΔG as Label (Default Pipeline)
 
 **Cleaning Pipeline**
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
     create_cdna_proteolysis_cleaner,
-    clean_cdna_proteolysis_dataset
+    clean_cdna_proteolysis_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv")
+artifact_path = Path("../logs/cDNA_Proteolysis_ddG_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/cDNA_Proteolysis_ddG_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
 # Clean data
-cdnap_cleaning_pipeline = create_cdna_proteolysis_cleaner(dataset_filepath)
-cdnap_cleaning_pipeline, cdnap_dataset = clean_cdna_proteolysis_dataset(cdnap_cleaning_pipeline)
+cdna_cleaning_pipeline = create_cdna_proteolysis_cleaner(dataset_file_path)
+cdna_cleaning_pipeline, cdna_dataset = clean_cdna_proteolysis_dataset(
+    cdna_cleaning_pipeline
+)
+
+# Save data
+cdna_dataset.save("../outputs/cleaned_cDNA_Proteolysis_ddG_Dataset")
+cdna_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### ΔG as Label
 
 **Cleaning Pipeline**
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
-    CDNAProteolysisCleanerConfig, 
+    CDNAProteolysisCleanerConfig,
     create_cdna_proteolysis_cleaner,
-    clean_cdna_proteolysis_dataset
+    clean_cdna_proteolysis_dataset,
 )
 
-# File settings
-dataset_filepath = "path/to/dataset/file"
-
 # Set cleaning configs
-cdnap_cleaning_config = CDNAProteolysisCleanerConfig()
-cdnap_cleaning_config.column_mapping = {
+cdna_cleaning_config = CDNAProteolysisCleanerConfig()
+cdna_cleaning_config.column_mapping = {
     "WT_name": "name",
     "aa_seq": "mut_seq",
     "mut_type": "mut_info",
     "dG_ML": "label_cDNAProteolysis",
 }
+# File settings
+dataset_file_path = Path("../dataset/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv")
+artifact_path = Path("../logs/cDNA_Proteolysis_dG_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/cDNA_Proteolysis_dG_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
 # Clean data
-cdnap_cleaning_pipeline = create_cdna_proteolysis_cleaner(dataset_filepath, cdnap_cleaning_config)
-cdnap_cleaning_pipeline, cdnap_dataset = clean_cdna_proteolysis_dataset(cdnap_cleaning_pipeline)
+cdna_cleaning_pipeline = create_cdna_proteolysis_cleaner(dataset_file_path, cdna_cleaning_config)
+cdna_cleaning_pipeline, cdna_dataset = clean_cdna_proteolysis_dataset(
+    cdna_cleaning_pipeline
+)
+
+# Save data
+cdna_dataset.save("../outputs/cleaned_cDNA_Proteolysis_dG_Dataset")
+cdna_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -175,28 +272,44 @@ You can download the source file directly by running (see {py:func}`mutcleaner.u
 from mutcleaner import download_ddg_dtm_source_file
 
 # Download all datasets
-filepaths = download_ddg_dtm_source_file("path/to/target/folder")
+file_paths = download_ddg_dtm_source_file("../dataset/ddG_Dataset")
 
 # Or specify a particular dataset, e.g.
-filepath = download_ddg_dtm_source_file("path/to/target/folder", sub_dataset = "S461")
+file_path = download_ddg_dtm_source_file("../dataset/ddG_Dataset", sub_dataset="S461")
 ```
 
 #### Basic Usage
 
-{py:func}`mutcleaner.cleaners.ddg_dtm_cleaners.create_ddg_dtm_cleaner` can automatically recognize the label column (ddG or dTm). For example:
+{py:func}`mutcleaner.cleaners.ddg_dtm_cleaners.create_ddg_dtm_cleaner` can automatically recognize the label column ddG. For example:
 
 ```python
-from mutcleaner.cleaners import (
-    create_ddg_dtm_cleaner,
-    clean_ddg_dtm_dataset
-)
+from pathlib import Path
+import pickle
+from mutcleaner.cleaners import create_ddg_dtm_cleaner, clean_ddg_dtm_dataset
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/ddG_Dataset/S461.csv")
+artifact_path = Path("../logs/ddG_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/ddG_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_filepath)
-ddgdtm_cleaning_pipeline, ddgdtm_dataset = clean_ddg_dtm_dataset(ddgdtm_cleaning_pipeline)
+ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_file_path)
+ddgdtm_cleaning_pipeline, ddgdtm_dataset = clean_ddg_dtm_dataset(
+    ddgdtm_cleaning_pipeline
+)
+
+# Save data
+ddgdtm_dataset.save("../outputs/cleaned_ddG_Dataset/S461")
+ddgdtm_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -212,10 +325,10 @@ You can download the source file directly by running (see {py:func}`mutcleaner.u
 from mutcleaner import download_ddg_dtm_source_file
 
 # Download all datasets
-filepaths = download_ddg_dtm_source_file("path/to/target/folder")
+file_paths = download_ddg_dtm_source_file("../dataset/dTm_Dataset")
 
 # Or specify a particular dataset, e.g.
-filepath = download_ddg_dtm_source_file("path/to/target/folder", sub_dataset = "S571")
+file_path = download_ddg_dtm_source_file("../dataset/dTm_Dataset", sub_dataset="S571")
 ```
 
 #### Basic Usage
@@ -223,17 +336,33 @@ filepath = download_ddg_dtm_source_file("path/to/target/folder", sub_dataset = "
 {py:func}`mutcleaner.cleaners.ddg_dtm_cleaners.create_ddg_dtm_cleaner` can automatically recognize the label column dTm. For example:
 
 ```python
-from mutcleaner.cleaners import (
-    create_ddg_dtm_cleaner,
-    clean_ddg_dtm_dataset
-)
+from pathlib import Path
+import pickle
+from mutcleaner.cleaners import create_ddg_dtm_cleaner, clean_ddg_dtm_dataset
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/dTm_Dataset/S571.csv")
+artifact_path = Path("../logs/dTm_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/dTm_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_filepath)
-ddgdtm_cleaning_pipeline, ddgdtm_dataset = clean_ddg_dtm_dataset(ddgdtm_cleaning_pipeline)
+ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_file_path)
+ddgdtm_cleaning_pipeline, ddgdtm_dataset = clean_ddg_dtm_dataset(
+    ddgdtm_cleaning_pipeline
+)
+
+# Save data
+ddgdtm_dataset.save("../outputs/cleaned_dTm_Dataset/S571")
+ddgdtm_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -247,25 +376,43 @@ See {py:class}`mutcleaner.cleaners.DdgDtmCleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_archstabms1e10_source_file` for details):
 ```python
 from mutcleaner import download_archstabms1e10_source_file
-filepaths = download_archstabms1e10_source_file("path/to/target/folder")
+
+file_paths = download_archstabms1e10_source_file("../dataset/ArchStabMS1E10_Epistasis_Dataset")
 ```
 
 #### Basic Usage
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
     create_archstabms_1e10_cleaner,
-    clean_archstabms_1e10_dataset
+    clean_archstabms_1e10_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Dataset.csv")
+artifact_path = Path("../logs/ArchStabMS1E10_Epistasis_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/ArchStabMS1E10_Epistasis_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-archstabms_cleaning_pipeline = create_archstabms_1e10_cleaner(dataset_filepath)
+archstabms_cleaning_pipeline = create_archstabms_1e10_cleaner(dataset_file_path)
 archstabms_cleaning_pipeline, archstabms_dataset = clean_archstabms_1e10_dataset(
     archstabms_cleaning_pipeline
 )
+
+# Save data
+archstabms_dataset.save("../outputs/cleaned_ArchStabMS1E10_Epistasis_Dataset")
+archstabms_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -279,25 +426,43 @@ See {py:class}`mutcleaner.cleaners.ArchStabMS1E10CleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_antitoxin_pard3_source_file` for details):
 ```python
 from mutcleaner import download_antitoxin_pard3_source_file
-filepaths = download_antitoxin_pard3_source_file("path/to/target/folder")
+
+file_paths = download_antitoxin_pard3_source_file("path/to/target/folder")
 ```
 
 #### Basic Usage
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
     create_antitoxin_pard3_cleaner,
-    clean_antitoxin_pard3_dataset
+    clean_antitoxin_pard3_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/Antitoxin_ParD3_Epistasis_Dataset/Antitoxin_ParD3_Epistasis_Dataset.csv")
+artifact_path = Path("../logs/Antitoxin_ParD3_Epistasis_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/Antitoxin_ParD3_Epistasis_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-antitoxin_pard3_cleaning_pipeline = create_antitoxin_pard3_cleaner(dataset_filepath)
-antitoxin_pard3_cleaning_pipeline, antitoxin_pard3_dataset = clean_antitoxin_pard3_dataset(
-    antitoxin_pard3_cleaning_pipeline
+antitoxin_pard3_cleaning_pipeline = create_antitoxin_pard3_cleaner(dataset_file_path)
+antitoxin_pard3_cleaning_pipeline, antitoxin_pard3_dataset = (
+    clean_antitoxin_pard3_dataset(antitoxin_pard3_cleaning_pipeline)
 )
+
+# Save data
+antitoxin_pard3_dataset.save("../outputs/cleaned_Antitoxin_ParD3_Epistasis_Dataset")
+antitoxin_pard3_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -311,23 +476,43 @@ See {py:class}`mutcleaner.cleaners.AntitoxinParD3CleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_trpb_source_file` for details):
 ```python
 from mutcleaner import download_trpb_source_file
-filepaths = download_trpb_source_file("path/to/target/folder")
+
+file_path = download_trpb_source_file("path/to/target/folder")
 ```
 
 #### Basic Usage
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
     create_trpb_cleaner,
-    clean_trpb_dataset
+    clean_trpb_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/TrpB_Epistasis_Dataset/TrpB_Epistasis_Dataset.csv")
+artifact_path = Path("../logs/TrpB_Epistasis_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/TrpB_Epistasis_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-trpb_cleaning_pipeline = create_trpb_cleaner(dataset_filepath)
-trpb_cleaning_pipeline, trpb_dataset = clean_trpb_dataset(trpb_cleaning_pipeline)
+trpb_cleaning_pipeline = create_trpb_cleaner(dataset_file_path)
+trpb_cleaning_pipeline, trpb_dataset = clean_trpb_dataset(
+    trpb_cleaning_pipeline
+)
+
+# Save data
+trpb_dataset.save("../outputs/cleaned_TrpB_Epistasis_Dataset")
+trpb_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts and read the object
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -342,25 +527,43 @@ See {py:class}`mutcleaner.cleaners.TrpBCleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_human_myoglobin_source_file` for details):
 ```python
 from mutcleaner import download_human_myoglobin_source_file
-filepaths = download_human_myoglobin_source_file("path/to/target/folder")
+
+file_paths = download_human_myoglobin_source_file("../dataset/Human_Myoglobin_Epistasis_Dataset")
 ```
 
 #### Basic Usage
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
     create_human_myoglobin_cleaner,
     clean_human_myoglobin_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/Human_Myoglobin_Epistasis_Dataset/Human_Myoglobin_Epistasis_Dataset.csv")
+artifact_path = Path("../logs/Human_Myoglobin_Epistasis_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/Human_Myoglobin_Epistasis_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-human_myoglobin_cleaning_pipeline = create_human_myoglobin_cleaner(dataset_filepath)
+human_myoglobin_cleaning_pipeline = create_human_myoglobin_cleaner(dataset_file_path)
 human_myoglobin_cleaning_pipeline, human_myoglobin_dataset = clean_human_myoglobin_dataset(
     human_myoglobin_cleaning_pipeline
 )
+
+# Save data
+human_myoglobin_dataset.save("../outputs/cleaned_Human_Myoglobin_Epistasis_Dataset")
+human_myoglobin_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts and read the object
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -375,23 +578,41 @@ See {py:class}`mutcleaner.cleaners.HumanMyoglobinCleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_ctxm_source_file` for details):
 ```python
 from mutcleaner import download_ctxm_source_file
-filepaths = download_ctxm_source_file("path/to/target/folder")
+
+file_paths = download_ctxm_source_file("../dataset/CTXM_Epistasis_Dataset")
 ```
 
 #### Basic Usage
 
 ```python
+import pickle
+from pathlib import Path
 from mutcleaner.cleaners import (
     create_ctxm_cleaner,
     clean_ctxm_dataset,
 )
 
 # File settings
-dataset_filepath = "path/to/dataset/file"
+dataset_file_path = Path("../dataset/CTXM_Epistasis_Dataset/CTXM_Ampicillin_Epistasis_Dataset.csv")
+artifact_path = Path("../logs/CTXM_Ampicillin_Epistasis_Dataset/artifacts.pkl")
+artifact_csv_dir = Path("../logs/CTXM_Ampicillin_Epistasis_Dataset")
+
+artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean data
-ctxm_cleaning_pipeline = create_ctxm_cleaner(dataset_filepath)
+ctxm_cleaning_pipeline = create_ctxm_cleaner(dataset_file_path)
 ctxm_cleaning_pipeline, ctxm_dataset = clean_ctxm_dataset(ctxm_cleaning_pipeline)
+
+# Save data
+ctxm_dataset.save("../outputs/cleaned_CTXM_Epistasis_Dataset")
+ctxm_cleaning_pipeline.save_artifacts(artifact_path)
+
+# Load cleaning artifacts
+with open(artifact_path, "rb") as file:
+    artifacts = pickle.load(file)
+
+for artifact_name, artifact_df in artifacts.items():
+    artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 ```
 
 #### Advanced Settings
@@ -406,14 +627,14 @@ See {py:class}`mutcleaner.cleaners.CTXMCleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_rbd_ace2_source_file` for details):
 ```python
 from mutcleaner import download_rbd_ace2_source_file
-filepaths = download_rbd_ace2_source_file("path/to/target/folder")
+file_paths = download_rbd_ace2_source_file("path/to/target/folder")
 ```
 
 You can also download and process a specific sub-dataset:
 
 ```python
 from mutcleaner import download_rbd_ace2_source_file
-filepaths = download_rbd_ace2_source_file(
+file_paths = download_rbd_ace2_source_file(
     "path/to/target/folder",
     sub_dataset="Omicron_EG5_FLip_BA286",
 )
@@ -434,13 +655,13 @@ Alternatively, you can download it from [Hugging Face](https://huggingface.co/da
 from mutcleaner import download_rbd_ace2_source_file
 from mutcleaner.cleaners import clean_rbd_ace2_dataset, create_rbd_ace2_cleaner
 
-filepaths = download_rbd_ace2_source_file(
+file_paths = download_rbd_ace2_source_file(
     "path/to/target/folder",
     sub_dataset="Omicron_EG5_FLip_BA286",
 )
-dataset_filepath = next(iter(filepaths.values()))
+dataset_file_path = next(iter(file_paths.values()))
 
-rbd_ace2_cleaning_pipeline = create_rbd_ace2_cleaner(dataset_filepath)
+rbd_ace2_cleaning_pipeline = create_rbd_ace2_cleaner(dataset_file_path)
 rbd_ace2_cleaning_pipeline, rbd_ace2_dataset = clean_rbd_ace2_dataset(
     rbd_ace2_cleaning_pipeline
 )
@@ -457,14 +678,14 @@ See {py:class}`mutcleaner.cleaners.RBDACE2CleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_rbd_antibody_source_file` for details):
 ```python
 from mutcleaner import download_rbd_antibody_source_file
-filepaths = download_rbd_antibody_source_file("path/to/target/folder")
+file_paths = download_rbd_antibody_source_file("path/to/target/folder")
 ```
 
 You can also download and process a specific sub-dataset:
 
 ```python
 from mutcleaner import download_rbd_antibody_source_file
-filepaths = download_rbd_antibody_source_file(
+file_paths = download_rbd_antibody_source_file(
     "path/to/target/folder",
     sub_dataset="AZ_Abs",
 )
@@ -486,13 +707,13 @@ Alternatively, you can download it from [Hugging Face](https://huggingface.co/da
 from mutcleaner import download_rbd_antibody_source_file
 from mutcleaner.cleaners import clean_rbd_antibody_dataset, create_rbd_antibody_cleaner
 
-filepaths = download_rbd_antibody_source_file(
+file_paths = download_rbd_antibody_source_file(
     "path/to/target/folder",
     sub_dataset="AZ_Abs",
 )
-dataset_filepath = next(iter(filepaths.values()))
+dataset_file_path = next(iter(file_paths.values()))
 
-rbd_antibody_cleaning_pipeline = create_rbd_antibody_cleaner(dataset_filepath)
+rbd_antibody_cleaning_pipeline = create_rbd_antibody_cleaner(dataset_file_path)
 rbd_antibody_cleaning_pipeline, rbd_antibody_dataset = clean_rbd_antibody_dataset(
     rbd_antibody_cleaning_pipeline
 )

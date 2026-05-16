@@ -217,7 +217,7 @@ def create_antitoxin_pard3_cleaner(
             .delayed_then(
                 add_columns, 
                 columns_to_add={
-                    "antitoxin": "name",
+                    "name": "antitoxin",
                     "wt_seq": final_config.wt_sequence,
                 },
             )

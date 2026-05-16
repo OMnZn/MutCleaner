@@ -42,11 +42,11 @@ DATASETS = {
         "official_doi": "https://doi.org/10.1038/s43588-024-00716-2",
         "files": ["M1261.csv", "S461.csv", "S669.csv", "S783.csv", "S8754.csv"],
         "huggingface_repos": [
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/M1261.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S461.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S669.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S783.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S8754.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/M1261.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S461.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S669.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S783.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S8754.csv?download=true",
         ],
         "file_name": [
             "M1261.csv",
@@ -59,35 +59,35 @@ DATASETS = {
             "M1261": {
                 "files": ["M1261.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/M1261.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/M1261.csv?download=true"
                 ],
                 "file_name": ["M1261.csv"],
             },
             "S461": {
                 "files": ["S461.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S461.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S461.csv?download=true"
                 ],
                 "file_name": ["S461.csv"],
             },
             "S669": {
                 "files": ["S669.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S669.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S669.csv?download=true"
                 ],
                 "file_name": ["S669.csv"],
             },
             "S783": {
                 "files": ["S783.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S783.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S783.csv?download=true"
                 ],
                 "file_name": ["S783.csv"],
             },
             "S8754": {
                 "files": ["S8754.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94%CE%94G_Dataset/S8754.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/S8754.csv?download=true"
                 ],
                 "file_name": ["S8754.csv"],
             },
@@ -98,8 +98,8 @@ DATASETS = {
         "official_doi": "https://doi.org/10.1038/s43588-024-00716-2",
         "files": ["S4346.csv", "S571.csv"],
         "huggingface_repos": [
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94Tm_Dataset/S4346.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/%CE%94Tm_Dataset/S571.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/dTm_Dataset/S4346.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/dTm_Dataset/S571.csv?download=true",
         ],
         "file_name": [
             "S4346.csv",
@@ -109,14 +109,14 @@ DATASETS = {
             "S4346": {
                 "files": ["S4346.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94Tm_Dataset/S4346.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/dTm_Dataset/S4346.csv?download=true"
                 ],
                 "file_name": ["S4346.csv"],
             },
             "S571": {
                 "files": ["S571.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/%CE%94Tm_Dataset/S571.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/dTm_Dataset/S571.csv?download=true"
                 ],
                 "file_name": ["S571.csv"],
             },

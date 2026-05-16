@@ -100,6 +100,10 @@ class CTXMCleanerConfig(BaseCleanerConfig):
 
     # Score columns configuration
     label_columns: List[str] = field(default_factory=lambda: ["label"])
+    
+    # wt name
+    wt_name: str = "CTXM_ampicillin"
+    
     primary_label_column: str = "label"
 
     # Override default pipeline name
@@ -203,7 +207,7 @@ def create_ctxm_cleaner(
             .delayed_then(
                 add_columns,
                 columns_to_add={
-                    "name": "CTXM_ampicillin",
+                    "name": final_config.wt_name,
                     "wt_seq": final_config.wt_sequence,
                 },
             )
