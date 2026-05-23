@@ -468,54 +468,70 @@ def download_human_domainome_source_file(
     )
 
 
+from typing import Dict, Literal, Optional
+
+
 def download_ddg_dtm_source_file(
-    dir: str, *, overwrite: bool = False, sub_dataset: Optional[str] = None
+    dir: str,
+    *,
+    dataset_type: Literal["ddg", "dtm"],
+    overwrite: bool = False,
+    sub_dataset: Optional[str] = None,
 ) -> Dict[str, str]:
     """
-    Download the source file for ddG-dTm datasets from the original source.
+    Download the source file for ddG or dTm datasets from the original source.
 
     Parameters
     ----------
     dir : str
         The target directory where the file will be saved.
+    dataset_type : Literal["ddg", "dtm"]
+        Dataset type to download.
+        - "ddg": download ΔΔG datasets
+        - "dtm": download ΔTm datasets
     overwrite : bool, default=False
         Whether to overwrite the file if it already exists. Default is False.
     sub_dataset : Optional[str], default=None
-        Sub-dataset to download. If None, download the entire dataset.
-        Supported options:
-        - ΔΔG Dataset: "M1261", "S461", "S669", "S783", "S8754"
-        - ΔTm Dataset: "S4346", "S571"
+        Sub-dataset to download. If None, download all datasets of the selected type.
+
+        Supported options for dataset_type="ddg":
+        "M1261", "S461", "S669", "S783", "S8754"
+
+        Supported options for dataset_type="dtm":
+        "S4346", "S571"
 
     Returns
     -------
     Dict[str, str]
         key: file name,
-        value: file path pointing to the ddG-dTm dataset source file
+        value: file path pointing to the ddG or dTm dataset source file
     """
-    ddg_datasets = list(DATASETS["ΔΔG Dataset"]["sub_datasets"].keys())
-    dtm_datasets = list(DATASETS["ΔTm Dataset"]["sub_datasets"].keys())
-    supported_sub_datasets = ddg_datasets + dtm_datasets
+    dataset_map = {
+        "ddg": "ΔΔG Dataset",
+        "dtm": "ΔTm Dataset",
+    }
+
+    if dataset_type not in dataset_map:
+        raise ValueError(
+            f"Unsupported dataset type: {dataset_type}. "
+            f'Supported options: "ddg", "dtm".'
+        )
+
+    dataset_name = dataset_map[dataset_type]
+    supported_sub_datasets = list(DATASETS[dataset_name]["sub_datasets"].keys())
+
     if sub_dataset is not None and sub_dataset not in supported_sub_datasets:
         raise ValueError(
-            f"Unsupported sub-dataset. Supported options: "
+            f"Unsupported sub-dataset for {dataset_type}. Supported options: "
             f"{', '.join(supported_sub_datasets)}"
         )
 
-    if sub_dataset is None:
-        file_paths = download_source_file_from_huggingface(
-            "ΔΔG Dataset", dir, overwrite=overwrite
-        )
-        file_paths.update(
-            download_source_file_from_huggingface(
-                "ΔTm Dataset", dir, overwrite=overwrite
-            )
-        )
-    else:
-        dataset_name = "ΔΔG Dataset" if sub_dataset in ddg_datasets else "ΔTm Dataset"
-        file_paths = download_source_file_from_huggingface(
-            dataset_name, dir, overwrite=overwrite, sub_dataset=sub_dataset
-        )
-    return file_paths
+    return download_source_file_from_huggingface(
+        dataset_name,
+        dir,
+        overwrite=overwrite,
+        sub_dataset=sub_dataset,
+    )
 
 
 def download_archstabms1e10_source_file(

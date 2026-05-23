@@ -47,7 +47,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -115,7 +115,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -139,7 +139,6 @@ The following example shows the complete workflow for downloading, cleaning,
 saving the cleaned cDNA Proteolysis dataset, and exporting the
 cleaning artifacts, using ΔΔG as the label:
 ```python
-# ddg as label
 import pickle
 from pathlib import Path
 from mutcleaner import download_cdna_proteolysis_source_file
@@ -180,7 +179,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -197,7 +196,6 @@ The following example shows the complete workflow for downloading, cleaning,
 saving the cleaned cDNA Proteolysis dataset, and exporting the
 cleaning artifacts, using ΔG as the label:
 ```python
-# dg as label
 import pickle
 from pathlib import Path
 from mutcleaner.cleaners import (
@@ -244,7 +242,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -258,56 +256,51 @@ if __name__ == "__main__":
 ### Advanced Settings
 See {py:class}`mutcleaner.cleaners.CDNAProteolysisCleanerConfig` for details.
 
-## ddG-dTm Dataset
+## ddG Dataset
 
 ### Basic Usage
 
 The following example shows the complete workflow for downloading, cleaning,
-saving the cleaned ΔΔG-ΔTm dataset, and exporting the
-cleaning artifacts:
+saving the cleaned ΔΔG dataset, and exporting the cleaning artifacts:
 ```python
 import pickle
 from pathlib import Path
 from mutcleaner import download_ddg_dtm_source_file
 from mutcleaner.cleaners import (
-    create_ddg_dtm_cleaner,
+    create_ddg_dtm_cleaner, 
     clean_ddg_dtm_dataset,
 )
 
 
 def main():
     # Prepare data
-    raw_data_dir = Path("raw_dataset/ddG_dTm_Dataset")
-    download_ddg_dtm_source_file(raw_data_dir)
+    raw_data_dir = Path("raw_dataset/ddG_Dataset")
+    download_ddg_dtm_source_file(raw_data_dir, dataset_type="ddg", overwrite=True)
 
     # File settings
-    for dataset_file_path in sorted(raw_data_dir.glob("*.csv")):
-        data_file = dataset_file_path.stem
-        artifact_path = Path(f"logs/ddG_dTm_Dataset/{data_file}/artifacts.pkl")
-        artifact_csv_dir = Path(f"logs/ddG_dTm_Dataset/{data_file}")
+    for dataset_filepath in sorted(raw_data_dir.glob("*.csv")):
+        data_file = dataset_filepath.stem
+        artifact_path = Path(f"logs/ddG_Dataset/{data_file}/artifacts.pkl")
+        artifact_csv_dir = Path(f"logs/ddG_Dataset/{data_file}")
 
         artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Clean data
-        ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_file_path)
+        ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_filepath)
         ddgdtm_cleaning_pipeline, ddgdtm_dataset = clean_ddg_dtm_dataset(
             ddgdtm_cleaning_pipeline
         )
 
         # Save data
-        ddgdtm_dataset.save(
-            f"cleaned_dataset/cleaned_ddG_dTm_Dataset/{data_file}"
-        )
+        ddgdtm_dataset.save(f"cleaned_dataset/cleaned_ddG_Dataset/{data_file}")
         ddgdtm_cleaning_pipeline.save_artifacts(artifact_path)
 
-        # Read artifacts from the pickle file
+        # open the pickle file
         with open(artifact_path, "rb") as file:
             artifacts = pickle.load(file)
 
         for artifact_name, artifact_df in artifacts.items():
-            artifact_df.to_csv(
-                artifact_csv_dir / f"{artifact_name}.csv", index=False
-            )
+            artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
 
 
 if __name__ == "__main__":
@@ -321,6 +314,63 @@ if __name__ == "__main__":
 
 See {py:class}`mutcleaner.cleaners.DdgDtmCleanerConfig` for details.
 
+## dTm Dataset
+
+### Basic Usage
+
+The following example shows the complete workflow for downloading, cleaning,
+saving the cleaned ΔTm dataset, and exporting the cleaning artifacts:
+```python
+import pickle
+from pathlib import Path
+from mutcleaner import download_ddg_dtm_source_file
+from mutcleaner.cleaners import (
+    create_ddg_dtm_cleaner, 
+    clean_ddg_dtm_dataset,
+)
+
+
+def main():
+    # Prepare data
+    raw_data_dir = Path("raw_dataset/dTm_Dataset")
+    download_ddg_dtm_source_file(raw_data_dir, dataset_type="dtm", overwrite=True)
+
+    # File settings
+    for dataset_filepath in sorted(raw_data_dir.glob("*.csv")):
+        data_file = dataset_filepath.stem
+        artifact_path = Path(f"logs/dTm_Dataset/{data_file}/artifacts.pkl")
+        artifact_csv_dir = Path(f"logs/dTm_Dataset/{data_file}")
+
+        artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
+        # Clean data
+        ddgdtm_cleaning_pipeline = create_ddg_dtm_cleaner(dataset_filepath)
+        ddgdtm_cleaning_pipeline, ddgdtm_dataset = clean_ddg_dtm_dataset(
+            ddgdtm_cleaning_pipeline
+        )
+
+        # Save data
+        ddgdtm_dataset.save(f"cleaned_dataset/cleaned_dTm_Dataset/{data_file}")
+        ddgdtm_cleaning_pipeline.save_artifacts(artifact_path)
+
+        # open the pickle file
+        with open(artifact_path, "rb") as file:
+            artifacts = pickle.load(file)
+
+        for artifact_name, artifact_df in artifacts.items():
+            artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
+
+
+if __name__ == "__main__":
+    import multiprocessing
+
+    multiprocessing.freeze_support()
+    main()
+```
+
+### Advanced Settings
+
+See {py:class}`mutcleaner.cleaners.DdgDtmCleanerConfig` for details.
 
 ## ArchStabMS1E10 Epistasis Dataset
 
@@ -374,7 +424,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -441,7 +491,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -502,7 +552,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -569,7 +619,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -631,7 +681,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 
@@ -689,7 +739,7 @@ def main():
 
     for artifact_name, artifact_df in artifacts.items():
         artifact_df.to_csv(
-            artifact_csv_dir / f"{artifact_name}.csv", index=False
+            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
         )
 
 

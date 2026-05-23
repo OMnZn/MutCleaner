@@ -6,8 +6,8 @@
 
 MutCleaner is an extensible Python toolkit for cleaning and standardizing biological mutation datasets, integrating dataset-specific cleaning pipelines with core abstractions for protein, nucleotide, and codon-level mutation representations.
 
-* **Documentation**: https://xulab-research.github.io/MutCleaner/
-* **Cleaning Examples**: https://xulab-research.github.io/MutCleaner/user_guide/cleaners.html
+* **Documentation**: https://xulab-research.github.io/MutCleaner
+* **Cleaning Examples**: https://xulab-research.github.io/MutCleaner/user_guide/supported_datasets.html
 
 ## Overview
 
@@ -95,7 +95,7 @@ The `utils` module contains helper functions that support common operations outs
 It includes utilities for downloading source files, handling paths, extracting files, checking file existence, and managing common input/output operations.  
 ## Quick Start
 
-See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/user_guide/cleaners.html) for more examples.
+See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/user_guide) for more examples.
 
 ### Supported Datasets
 
@@ -124,12 +124,12 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv">Tsuboyama2023_Dataset2_Dataset3_20230416.csv</a></td>
     </tr>
     <tr>
-      <td>ΔΔG Dataset</td>
+      <td>ddG Dataset</td>
       <td><a href="https://doi.org/10.1038/s43588-024-00716-2">Improving the prediction of protein stability changes upon mutations by geometric learning and a pre-training strategy</a></td>
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/M1261.csv">M1261.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S461.csv">S461.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S669.csv">S669.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S783.csv">S783.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S8754.csv">S8754.csv</a></td>
     </tr>
     <tr>
-      <td>ΔTm Dataset</td>
+      <td>dTm Dataset</td>
       <td><a href="https://doi.org/10.1038/s43588-024-00716-2">Improving the prediction of protein stability changes upon mutations by geometric learning and a pre-training strategy</a></td>
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94Tm_Dataset/S4346.csv">S4346.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94Tm_Dataset/S571.csv">S571.csv</a></td>
     </tr>

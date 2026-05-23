@@ -1,5 +1,4 @@
 # mutcleaner/utils/data_source.py
-
 DATASETS = {
     "cDNA Proteolysis Dataset": {
         "paper_title": "Mega-scale experimental analysis of protein folding stability in biology and design",
