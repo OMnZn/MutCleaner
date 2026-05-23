@@ -19,9 +19,11 @@ from mutcleaner.cleaners import (
 def main():
     # Prepare data
     download_human_domainome_source_file("raw_dataset/Human_Domainome_Dataset")
-    
+
     # File settings
-    dataset_file_path = Path("raw_dataset/Human_Domainome_Dataset/SupplementaryTable2.txt")
+    dataset_file_path = Path(
+        "raw_dataset/Human_Domainome_Dataset/SupplementaryTable2.txt"
+    )
     artifact_path = Path("logs/Human_Domainome_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/Human_Domainome_Dataset")
 
@@ -50,7 +52,6 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     main()
-
 ```
 
 ### Advanced Settings
@@ -76,16 +77,20 @@ from mutcleaner.cleaners import (
 def main():
     # Prepare data
     download_proteingym_source_file("raw_dataset/ProteinGym_DMS_Substitutions_Dataset")
-    
+
     # File settings
-    dataset_file_path = Path("raw_dataset/ProteinGym_DMS_Substitutions_Dataset/ProteinGym_DMS_substitutions.zip")
+    dataset_file_path = Path(
+        "raw_dataset/ProteinGym_DMS_Substitutions_Dataset/ProteinGym_DMS_substitutions.zip"
+    )
     artifact_path = Path("logs/ProteinGym_DMS_Substitutions_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/ProteinGym_DMS_Substitutions_Dataset")
 
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    pg_cleaning_pipeline = create_proteingym_dms_substitutions_cleaner(dataset_file_path)
+    pg_cleaning_pipeline = create_proteingym_dms_substitutions_cleaner(
+        dataset_file_path
+    )
     pg_cleaning_pipeline, pg_dataset = clean_proteingym_dms_substitutions_dataset(
         pg_cleaning_pipeline
     )
@@ -137,7 +142,9 @@ def main():
     download_cdna_proteolysis_source_file("raw_dataset/cDNA_Proteolysis_Dataset")
 
     # File settings
-    dataset_file_path = Path("raw_dataset/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv")
+    dataset_file_path = Path(
+        "raw_dataset/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv"
+    )
     artifact_path = Path("logs/cDNA_Proteolysis_ddG_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/cDNA_Proteolysis_ddG_Dataset")
 
@@ -193,16 +200,20 @@ def main():
         "mut_type": "mut_info",
         "dG_ML": "label_cDNAProteolysis",
     }
-    
+
     # File settings
-    dataset_file_path = Path("raw_dataset/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv")
+    dataset_file_path = Path(
+        "raw_dataset/cDNA_Proteolysis_Dataset/Tsuboyama2023_Dataset2_Dataset3_20230416.csv"
+    )
     artifact_path = Path("logs/cDNA_Proteolysis_dG_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/cDNA_Proteolysis_dG_Dataset")
 
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    cdna_cleaning_pipeline = create_cdna_proteolysis_cleaner(dataset_file_path, cdna_cleaning_config)
+    cdna_cleaning_pipeline = create_cdna_proteolysis_cleaner(
+        dataset_file_path, cdna_cleaning_config
+    )
     cdna_cleaning_pipeline, cdna_dataset = clean_cdna_proteolysis_dataset(
         cdna_cleaning_pipeline
     )
@@ -282,7 +293,6 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     main()
-
 ```
 
 ### Advanced Settings
@@ -312,7 +322,9 @@ def main():
     download_archstabms1e10_source_file("raw_dataset/ArchStabMS1E10_Epistasis_Dataset")
 
     # File settings
-    dataset_file_path = Path("raw_dataset/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Dataset.csv")
+    dataset_file_path = Path(
+        "raw_dataset/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Dataset.csv"
+    )
     artifact_path = Path("logs/ArchStabMS1E10_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/ArchStabMS1E10_Epistasis_Dataset")
 
@@ -366,23 +378,31 @@ from mutcleaner.cleaners import (
 
 def main():
     # Prepare dataset
-    download_antitoxin_pard3_source_file("raw_dataset/Antitoxin_ParD3_Epistasis_Dataset")
-    
+    download_antitoxin_pard3_source_file(
+        "raw_dataset/Antitoxin_ParD3_Epistasis_Dataset"
+    )
+
     # File settings
-    dataset_file_path = Path("raw_dataset/Antitoxin_ParD3_Epistasis_Dataset/Antitoxin_ParD3_Epistasis_Dataset.csv")
+    dataset_file_path = Path(
+        "raw_dataset/Antitoxin_ParD3_Epistasis_Dataset/Antitoxin_ParD3_Epistasis_Dataset.csv"
+    )
     artifact_path = Path("logs/Antitoxin_ParD3_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/Antitoxin_ParD3_Epistasis_Dataset")
 
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    antitoxin_pard3_cleaning_pipeline = create_antitoxin_pard3_cleaner(dataset_file_path)
+    antitoxin_pard3_cleaning_pipeline = create_antitoxin_pard3_cleaner(
+        dataset_file_path
+    )
     antitoxin_pard3_cleaning_pipeline, antitoxin_pard3_dataset = (
         clean_antitoxin_pard3_dataset(antitoxin_pard3_cleaning_pipeline)
     )
 
     # Save data
-    antitoxin_pard3_dataset.save("cleaned_dataset/cleaned_Antitoxin_ParD3_Epistasis_Dataset")
+    antitoxin_pard3_dataset.save(
+        "cleaned_dataset/cleaned_Antitoxin_ParD3_Epistasis_Dataset"
+    )
     antitoxin_pard3_cleaning_pipeline.save_artifacts(artifact_path)
 
     # Read artifacts from the pickle file
@@ -398,7 +418,6 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     main()
-
 ```
 
 ### Advanced Settings
@@ -425,9 +444,11 @@ from mutcleaner.cleaners import (
 def main():
     # Prepare data
     download_trpb_source_file("raw_dataset/TrpB_Epistasis_Dataset")
-    
+
     # File settings
-    dataset_file_path = Path("raw_dataset/TrpB_Epistasis_Dataset/TrpB_Epistasis_Dataset.csv")
+    dataset_file_path = Path(
+        "raw_dataset/TrpB_Epistasis_Dataset/TrpB_Epistasis_Dataset.csv"
+    )
     artifact_path = Path("logs/TrpB_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/TrpB_Epistasis_Dataset")
 
@@ -435,9 +456,7 @@ def main():
 
     # Clean data
     trpb_cleaning_pipeline = create_trpb_cleaner(dataset_file_path)
-    trpb_cleaning_pipeline, trpb_dataset = clean_trpb_dataset(
-        trpb_cleaning_pipeline
-    )
+    trpb_cleaning_pipeline, trpb_dataset = clean_trpb_dataset(trpb_cleaning_pipeline)
 
     # Save data
     trpb_dataset.save("cleaned_dataset/cleaned_TrpB_Epistasis_Dataset")
@@ -456,7 +475,6 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     main()
-
 ```
 
 ### Advanced Settings
@@ -482,23 +500,31 @@ from mutcleaner.cleaners import (
 
 def main():
     # Prepare data
-    download_human_myoglobin_source_file("raw_dataset/Human_Myoglobin_Epistasis_Dataset")
-    
+    download_human_myoglobin_source_file(
+        "raw_dataset/Human_Myoglobin_Epistasis_Dataset"
+    )
+
     # File settings
-    dataset_file_path = Path("raw_dataset/Human_Myoglobin_Epistasis_Dataset/Human_Myoglobin_Epistasis_Dataset.csv")
+    dataset_file_path = Path(
+        "raw_dataset/Human_Myoglobin_Epistasis_Dataset/Human_Myoglobin_Epistasis_Dataset.csv"
+    )
     artifact_path = Path("logs/Human_Myoglobin_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/Human_Myoglobin_Epistasis_Dataset")
 
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    human_myoglobin_cleaning_pipeline = create_human_myoglobin_cleaner(dataset_file_path)
-    human_myoglobin_cleaning_pipeline, human_myoglobin_dataset = clean_human_myoglobin_dataset(
-        human_myoglobin_cleaning_pipeline
+    human_myoglobin_cleaning_pipeline = create_human_myoglobin_cleaner(
+        dataset_file_path
+    )
+    human_myoglobin_cleaning_pipeline, human_myoglobin_dataset = (
+        clean_human_myoglobin_dataset(human_myoglobin_cleaning_pipeline)
     )
 
     # Save data
-    human_myoglobin_dataset.save("cleaned_dataset/cleaned_Human_Myoglobin_Epistasis_Dataset")
+    human_myoglobin_dataset.save(
+        "cleaned_dataset/cleaned_Human_Myoglobin_Epistasis_Dataset"
+    )
     human_myoglobin_cleaning_pipeline.save_artifacts(artifact_path)
 
     # Read artifacts from the pickle file and read the object
@@ -543,7 +569,9 @@ def main():
     download_ctxm_source_file("raw_dataset/CTXM_Epistasis_Dataset")
 
     # File settings
-    dataset_file_path = Path("raw_dataset/CTXM_Epistasis_Dataset/CTXM_Ampicillin_Epistasis_Dataset.csv")
+    dataset_file_path = Path(
+        "raw_dataset/CTXM_Epistasis_Dataset/CTXM_Ampicillin_Epistasis_Dataset.csv"
+    )
     artifact_path = Path("logs/CTXM_Ampicillin_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/CTXM_Ampicillin_Epistasis_Dataset")
 
@@ -593,14 +621,18 @@ def main():
     ctxm_cleaning_config.wt_name = "CTXM_cefotaxime"
 
     # File settings
-    dataset_file_path = Path("raw_dataset/CTXM_Epistasis_Dataset/CTXM_Cefotaxime_Epistasis_Dataset.csv")
+    dataset_file_path = Path(
+        "raw_dataset/CTXM_Epistasis_Dataset/CTXM_Cefotaxime_Epistasis_Dataset.csv"
+    )
     artifact_path = Path("logs/CTXM_Cefotaxime_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/CTXM_Cefotaxime_Epistasis_Dataset")
 
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    ctxm_cleaning_pipeline = create_ctxm_cleaner(dataset_file_path, ctxm_cleaning_config)
+    ctxm_cleaning_pipeline = create_ctxm_cleaner(
+        dataset_file_path, ctxm_cleaning_config
+    )
     ctxm_cleaning_pipeline, ctxm_dataset = clean_ctxm_dataset(ctxm_cleaning_pipeline)
 
     # Save data
@@ -634,6 +666,7 @@ See {py:class}`mutcleaner.cleaners.CTXMCleanerConfig` for details.
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_rbd_ace2_source_file` for details):
 ```python
 from mutcleaner import download_rbd_ace2_source_file
+
 download_rbd_ace2_source_file("path/to/target/folder")
 ```
 
@@ -641,6 +674,7 @@ You can also download and process a specific sub-dataset:
 
 ```python
 from mutcleaner import download_rbd_ace2_source_file
+
 download_rbd_ace2_source_file(
     "path/to/target/folder",
     sub_dataset="Omicron_EG5_FLip_BA286",
@@ -661,13 +695,14 @@ Alternatively, you can download it from [Hugging Face](https://huggingface.co/da
 
 See {py:class}`mutcleaner.cleaners.RBDACE2CleanerConfig` for details.
 
-## RBD-Antibody Dataset
+x`## RBD-Antibody Dataset
 
 ### Basic Usage
 
 You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_rbd_antibody_source_file` for details):
 ```python
 from mutcleaner import download_rbd_antibody_source_file
+
 file_paths = download_rbd_antibody_source_file("path/to/target/folder")
 ```
 
@@ -675,6 +710,7 @@ You can also download and process a specific sub-dataset:
 
 ```python
 from mutcleaner import download_rbd_antibody_source_file
+
 file_paths = download_rbd_antibody_source_file(
     "path/to/target/folder",
     sub_dataset="AZ_Abs",

@@ -1,0 +1,5 @@
+/* Wrap long lines in code blocks */
+.highlight pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
