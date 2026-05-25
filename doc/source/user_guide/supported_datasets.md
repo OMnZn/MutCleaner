@@ -772,49 +772,48 @@ from mutcleaner.cleaners import (
     clean_rbd_ace2_dataset,
 )
 
-
 def main():
-    # Prepare data
     raw_data_dir = Path("raw_dataset/RBD_ACE2_Dataset")
-    download_rbd_ace2_source_file(str(raw_data_dir))
+    raw_data_dir.mkdir(parents=True, exist_ok=True)
 
-    # File settings
-    dataset_file_path = (
-        raw_data_dir
-        / "SARS-CoV-2-RBD_DMS_Omicron-EG5-FLip-BA286_bc_binding.csv"
-    )
-    artifact_path = Path("logs/RBD_ACE2_Dataset/artifacts.pkl")
-    artifact_csv_dir = Path("logs/RBD_ACE2_Dataset")
+    dataset_file_paths = sorted(raw_data_dir.glob("*.csv"))
+    if not dataset_file_paths:
+        download_rbd_ace2_source_file(str(raw_data_dir))
+        dataset_file_paths = sorted(raw_data_dir.glob("*.csv"))
 
-    artifact_csv_dir.mkdir(parents=True, exist_ok=True)
-
-    # Clean data
-    rbd_ace2_cleaning_pipeline = create_rbd_ace2_cleaner(
-        dataset_file_path
-    )
-    rbd_ace2_cleaning_pipeline, rbd_ace2_dataset = clean_rbd_ace2_dataset(
-        rbd_ace2_cleaning_pipeline
-    )
-
-    # Save data
-    rbd_ace2_dataset.save("cleaned_dataset/cleaned_RBD_ACE2_Dataset")
-    rbd_ace2_cleaning_pipeline.save_artifacts(artifact_path)
-
-    # Read artifacts from the pickle file
-    with open(artifact_path, "rb") as file:
-        artifacts = pickle.load(file)
-
-    for artifact_name, artifact_df in artifacts.items():
-        artifact_df.to_csv(
-            f"{artifact_csv_dir}/{artifact_name}.csv", index=False
+    for dataset_file_path in dataset_file_paths:
+        dataset_name = dataset_file_path.stem
+        artifact_path = Path("logs/RBD_ACE2_Dataset") / dataset_name / "artifacts.pkl"
+        artifact_csv_dir = Path("logs/RBD_ACE2_Dataset") / dataset_name
+        cleaned_dataset_dir = (
+            Path("cleaned_dataset/cleaned_RBD_ACE2_Dataset") / dataset_name
         )
 
+        artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
+        rbd_ace2_cleaning_pipeline = create_rbd_ace2_cleaner(dataset_file_path)
+        rbd_ace2_cleaning_pipeline, rbd_ace2_dataset = clean_rbd_ace2_dataset(
+            rbd_ace2_cleaning_pipeline
+        )
+
+        rbd_ace2_dataset.save(str(cleaned_dataset_dir))
+        rbd_ace2_cleaning_pipeline.save_artifacts(artifact_path)
+
+        with open(artifact_path, "rb") as file:
+            artifacts = pickle.load(file)
+
+        for artifact_name, artifact_df in artifacts.items():
+            artifact_df.to_csv(
+                artifact_csv_dir / f"{artifact_name}.csv",
+                index=False,
+            )
 
 if __name__ == "__main__":
     import multiprocessing
 
     multiprocessing.freeze_support()
     main()
+
 ```
 
 You can also download a specific sub-dataset directly (see
