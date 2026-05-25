@@ -54,7 +54,6 @@ DEFAULT_RBD_TARGET_NAME_ALIASES = {
     "Wuhan_Hu_1": "Wuhan-Hu-1",
     "N501Y": "Alpha",
     "B1351": "Beta",
-    "Delta": "Delta",
     "E484K": "Eta",
     "BA1": "Omicron_BA1",
     "BA2": "Omicron_BA2",
@@ -62,8 +61,6 @@ DEFAULT_RBD_TARGET_NAME_ALIASES = {
     "EG5": "Omicron_EG5",
     "FLip": "Omicron_FLip",
     "XBB15": "Omicron_XBB15",
-    "SARS-CoV-2": "Wuhan-Hu-1",
-    "SARS_CoV_2": "Wuhan-Hu-1",
     "BA286": "Omicron_BA286",
 }
 
