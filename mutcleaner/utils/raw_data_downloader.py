@@ -757,3 +757,23 @@ def download_rbd_ace2_source_file(
         overwrite=overwrite,
         sub_dataset=sub_dataset,
     )
+
+
+def download_chitosanase_source_file(dir: str, *, overwrite: bool = False) -> Dict[str, str]:
+    """
+    Download the source file for Chitosanase Dataset from the original source.
+
+    Parameters
+    ----------
+    dir : str
+        The target directory where the file will be saved
+    overwrite : bool, default=False
+        Whether to overwrite the file if it already exists. Default is False.
+
+    Returns
+    -------
+    Dict[str, str]
+        key: file name,
+        value: file path pointing to Chitosanase Dataset source file
+    """
+    return download_source_file_from_huggingface("Chitosanase Dataset", dir, overwrite=overwrite)
