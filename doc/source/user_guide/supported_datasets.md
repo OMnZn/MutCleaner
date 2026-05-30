@@ -859,13 +859,8 @@ def main():
         artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
         # Clean data
-        chitosanase_cleaning_pipeline = create_chitosanase_cleaner(
-            dataset_filepath,
-            config={"wt_separator": '">wt'},
-        )
-        chitosanase_cleaning_pipeline, chitosanase_dataset = clean_chitosanase_dataset(
-            chitosanase_cleaning_pipeline
-        )
+        chitosanase_cleaning_pipeline = create_chitosanase_cleaner(dataset_filepath)
+        chitosanase_cleaning_pipeline, chitosanase_dataset = clean_chitosanase_dataset(chitosanase_cleaning_pipeline)
 
         # Save data
         chitosanase_dataset.save(f"cleaned_dataset/cleaned_Chitosanase_Dataset/{data_file}")
