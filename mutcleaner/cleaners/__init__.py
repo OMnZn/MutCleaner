@@ -66,7 +66,11 @@ from .rbd_ace2_cleaner import (
     clean_rbd_ace2_dataset,
 )
 
-
+from .chitosanase_cleaner import (
+    RBDACE2CleanerConfig,
+    create_rbd_ace2_cleaner,
+    clean_rbd_ace2_dataset,
+)
 
 __all__ = [
     "create_cdna_proteolysis_cleaner",
