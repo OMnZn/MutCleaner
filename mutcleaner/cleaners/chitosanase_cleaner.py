@@ -10,7 +10,7 @@ from .basic_cleaners import (
     apply_mutations_to_sequences,
     convert_to_mutation_dataset_format,
 )
-from .Chitosanase_custom_cleaners import parse_chitosanase_raw_file
+from .chitosanase_custom_cleaners import parse_chitosanase_raw_file
 from ..core.dataset import MutationDataset
 from ..core.pipeline import Pipeline, create_pipeline
 
