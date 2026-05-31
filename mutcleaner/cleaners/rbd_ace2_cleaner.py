@@ -11,7 +11,7 @@ import pandas as pd
 from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
     apply_mutations_preserving_wild_type,
-    prepare_ace2_binding_records,
+    prepare_rbd_records,
 )
 from .base_config import BaseCleanerConfig
 from .basic_cleaners import (
@@ -257,10 +257,12 @@ def create_rbd_ace2_cleaner(
     pipeline = create_pipeline(dataset_or_path, final_config.pipeline_name)
     pipeline = (
         pipeline.delayed_then(
-            prepare_ace2_binding_records,
+            prepare_rbd_records,
+            mode="ace2",
             reference_sequences=final_config.reference_sequences,
             target_name_aliases=final_config.target_name_aliases,
             column_mapping=final_config.column_mapping,
+            label_column="log10Ka",
         )
         .delayed_then(
             validate_mutations,

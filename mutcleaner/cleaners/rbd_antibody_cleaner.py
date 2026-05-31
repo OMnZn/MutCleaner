@@ -12,17 +12,18 @@ from .base_config import BaseCleanerConfig
 from .basic_cleaners import (
     average_labels_by_name,
     convert_to_mutation_dataset_format,
+    merge_columns,
     read_dataset,
     subtract_labels_by_wt,
     validate_mutations,
 )
 from .rbd_custom_cleaner import (
+    add_reference_sequences_by_target,
     apply_mutations_preserving_wild_type,
-    capture_rbd_antibody_variants,
-    prepare_rbd_antibody_records,
+    prepare_rbd_records,
 )
 from ..core.dataset import MutationDataset
-from ..core.pipeline import Pipeline, create_pipeline
+from ..core.pipeline import Pipeline, create_pipeline, multiout_step
 from ..core.sequence import ProteinSequence
 
 if TYPE_CHECKING:
@@ -45,6 +46,16 @@ DEFAULT_RBD_TARGET_NAME_ALIASES = {
     "SARS_CoV_2": "Wuhan-Hu-1",
     "Wuhan_Hu_1": "Wuhan-Hu-1",
 }
+
+
+@multiout_step(main="main", variants="variants")
+def capture_rbd_antibody_variants(
+    dataset: pd.DataFrame,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Keep WT-subtracted antibody rows in the pipeline and as a side artifact."""
+
+    result = dataset.reset_index(drop=True)
+    return result, result.copy()
 
 
 def __dir__() -> List[str]:
@@ -77,7 +88,6 @@ class RBDAntibodyConfig(BaseCleanerConfig):
     )
     fallback_reference_sequence: Optional[str] = None
     require_known_reference_sequence: bool = True
-    expected_reference_length: Optional[int] = None
     validate_mut_workers: int = 16
     process_workers: int = 16
     label_columns: List[str] = field(default_factory=lambda: ["label"])
@@ -100,10 +110,6 @@ class RBDAntibodyConfig(BaseCleanerConfig):
     def validate(self) -> None:
         super().validate()
 
-        if self.expected_reference_length is not None and int(
-            self.expected_reference_length
-        ) <= 0:
-            raise ValueError("expected_reference_length must be positive")
         if self.require_known_reference_sequence and not self.reference_sequences:
             raise ValueError(
                 "reference_sequences cannot be empty when "
@@ -194,7 +200,8 @@ def create_rbd_antibody_cleaner(
     pipeline = create_pipeline(dataset_or_path, final_config.pipeline_name)
     pipeline = (
         pipeline.delayed_then(
-            prepare_rbd_antibody_records,
+            prepare_rbd_records,
+            mode="antibody",
             reference_sequences=final_config.reference_sequences,
             target_name_aliases=final_config.target_name_aliases,
             column_mapping=final_config.column_mapping,
@@ -202,22 +209,38 @@ def create_rbd_antibody_cleaner(
             require_known_reference_sequence=(
                 final_config.require_known_reference_sequence
             ),
-            expected_reference_length=final_config.expected_reference_length,
         )
         .delayed_then(
             validate_mutations,
             mutation_column="mut_info",
             format_mutations=True,
-            mutation_sep=",",
-            is_zero_based=True,
+            mutation_sep=" ",
+            is_zero_based=False,
             exclude_patterns="WT",
             cache_results=False,
             num_workers=final_config.validate_mut_workers,
         )
         .delayed_then(
             average_labels_by_name,
-            name_columns=["group_name", "mut_info"],
+            name_columns=["reference_id", "antibody_name", "mut_info"],
             label_columns=final_config.label_columns,
+        )
+        .delayed_then(
+            add_reference_sequences_by_target,
+            reference_sequences=final_config.reference_sequences,
+            name_column="reference_id",
+            sequence_column="sequence",
+            fallback_reference_sequence=final_config.fallback_reference_sequence,
+        )
+        # `group_name` is only an internal WT-subtraction key. For the current
+        # antibody tables one file is usually one reference, so `antibody_name`
+        # would often be enough on its own, but we keep the combined key to
+        # preserve the existing downstream grouping behavior.
+        .delayed_then(
+            merge_columns,
+            columns_to_merge=["reference_id", "antibody_name"],
+            new_column_name="group_name",
+            separator="_",
         )
         .delayed_then(
             apply_mutations_preserving_wild_type,
@@ -270,7 +293,7 @@ def clean_rbd_antibody_dataset(
 
     pipeline.execute()
     dataset_df, reference_sequences = pipeline.data
-    summary_df = pipeline.get_artifact("prepare_rbd_antibody_records.summary")
+    summary_df = pipeline.get_artifact("prepare_rbd_records.summary")
     summary = summary_df.iloc[0].to_dict()
     source_reference_id = str(summary["reference_id"])
 
