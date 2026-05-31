@@ -2,82 +2,73 @@
 
 from .cdna_proteolysis_cleaner import (
     CDNAProteolysisCleanerConfig,
-    create_cdna_proteolysis_cleaner,
     clean_cdna_proteolysis_dataset,
+    create_cdna_proteolysis_cleaner,
 )
-
 from .proteingym_dms_substitutions_cleaner import (
     ProteinGymCleanerConfig,
-    create_proteingym_dms_substitutions_cleaner,
     clean_proteingym_dms_substitutions_dataset,
+    create_proteingym_dms_substitutions_cleaner,
 )
-
 from .human_domainome_sup2_cleaner import (
     HumanDomainomeSup2CleanerConfig,
-    create_human_domainome_sup2_cleaner,
     clean_human_domainome_sup2_dataset,
+    create_human_domainome_sup2_cleaner,
 )
-
 from .ddg_dtm_cleaners import (
     DdgDtmCleanerConfig,
-    create_ddg_dtm_cleaner,
     clean_ddg_dtm_dataset,
+    create_ddg_dtm_cleaner,
 )
-
 from .archstabms_1e10_cleaner import (
     ArchStabMS1E10CleanerConfig,
-    create_archstabms_1e10_cleaner,
     clean_archstabms_1e10_dataset,
+    create_archstabms_1e10_cleaner,
 )
-
 from .antitoxin_pard3_cleaner import (
     AntitoxinParD3CleanerConfig,
-    create_antitoxin_pard3_cleaner,
     clean_antitoxin_pard3_dataset,
+    create_antitoxin_pard3_cleaner,
 )
-
 from .trpb_cleaner import (
     TrpBCleanerConfig,
-    create_trpb_cleaner,
     clean_trpb_dataset,
+    create_trpb_cleaner,
 )
-
 from .ctxm_cleaner import (
     CTXMCleanerConfig,
-    create_ctxm_cleaner,
     clean_ctxm_dataset,
+    create_ctxm_cleaner,
 )
-
 from .human_myoglobin_cleaner import (
     HumanMyoglobinCleanerConfig,
-    create_human_myoglobin_cleaner,
     clean_human_myoglobin_dataset,
+    create_human_myoglobin_cleaner,
 )
-
 from .rbd_ace2_cleaner import (
     RBDACE2Config,
-    create_rbd_ace2_cleaner,
     clean_rbd_ace2_dataset,
+    create_rbd_ace2_cleaner,
+)
+from .rbd_antibody_cleaner import (
+    RBDAntibodyConfig,
+    clean_rbd_antibody_dataset,
+    create_rbd_antibody_cleaner,
 )
 
-
-
 __all__ = [
+    "CDNAProteolysisCleanerConfig",
     "create_cdna_proteolysis_cleaner",
     "clean_cdna_proteolysis_dataset",
-    "CDNAProteolysisCleanerConfig",
+    "ProteinGymCleanerConfig",
     "create_proteingym_dms_substitutions_cleaner",
     "clean_proteingym_dms_substitutions_dataset",
-    "ProteinGymCleanerConfig",
+    "HumanDomainomeSup2CleanerConfig",
     "create_human_domainome_sup2_cleaner",
     "clean_human_domainome_sup2_dataset",
-    "HumanDomainomeSup2CleanerConfig",
+    "DdgDtmCleanerConfig",
     "create_ddg_dtm_cleaner",
     "clean_ddg_dtm_dataset",
-    "DdgDtmCleanerConfig",
-    "ArchStabMS1E10CleanerConfig",
-    "create_archstabms_1e10_cleaner",
-    "clean_archstabms_1e10_dataset",
     "ArchStabMS1E10CleanerConfig",
     "create_archstabms_1e10_cleaner",
     "clean_archstabms_1e10_dataset",
@@ -96,4 +87,7 @@ __all__ = [
     "RBDACE2Config",
     "create_rbd_ace2_cleaner",
     "clean_rbd_ace2_dataset",
+    "RBDAntibodyConfig",
+    "create_rbd_antibody_cleaner",
+    "clean_rbd_antibody_dataset",
 ]

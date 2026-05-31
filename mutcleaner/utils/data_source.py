@@ -193,71 +193,41 @@ DATASETS = {
         "paper_title": "RBD_Antibody_datasets",
         "official_doi": None,
         "files": [
-            "SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv",
-            "SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv",
-            "SARS-CoV-2-RBD_MAP_Moderna_scores.csv",
-            "SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv",
-            "SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv",
-            "SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv",
+            "SARS-CoV-2-RBD_MAP_Moderna.csv",
+            "SARS-CoV-2-RBD_MAP_Rockefeller.csv",
+            "SARS-CoV-2-RBD_MAP_Vir_mAbs.csv",
         ],
         "huggingface_repos": [
-            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna_scores.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv?download=true",
-            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs.csv?download=true",
         ],
         "file_name": [
-            "SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv",
-            "SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv",
-            "SARS-CoV-2-RBD_MAP_Moderna_scores.csv",
-            "SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv",
-            "SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv",
-            "SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv",
+            "SARS-CoV-2-RBD_MAP_Moderna.csv",
+            "SARS-CoV-2-RBD_MAP_Rockefeller.csv",
+            "SARS-CoV-2-RBD_MAP_Vir_mAbs.csv",
         ],
         "sub_datasets": {
-            "AZ_Abs": {
-                "files": ["SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv"],
-                "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv?download=true"
-                ],
-                "file_name": ["SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv"],
-            },
-            "HAARVI_sera": {
-                "files": ["SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv"],
-                "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv?download=true"
-                ],
-                "file_name": ["SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv"],
-            },
             "Moderna": {
-                "files": ["SARS-CoV-2-RBD_MAP_Moderna_scores.csv"],
+                "files": ["SARS-CoV-2-RBD_MAP_Moderna.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna_scores.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna.csv?download=true"
                 ],
-                "file_name": ["SARS-CoV-2-RBD_MAP_Moderna_scores.csv"],
+                "file_name": ["SARS-CoV-2-RBD_MAP_Moderna.csv"],
             },
             "Rockefeller": {
-                "files": ["SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv"],
+                "files": ["SARS-CoV-2-RBD_MAP_Rockefeller.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller.csv?download=true"
                 ],
-                "file_name": ["SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv"],
+                "file_name": ["SARS-CoV-2-RBD_MAP_Rockefeller.csv"],
             },
             "Vir_mAbs": {
-                "files": ["SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv"],
+                "files": ["SARS-CoV-2-RBD_MAP_Vir_mAbs.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs.csv?download=true"
                 ],
-                "file_name": ["SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv"],
-            },
-            "clinical_Abs": {
-                "files": ["SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv"],
-                "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv?download=true"
-                ],
-                "file_name": ["SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv"],
+                "file_name": ["SARS-CoV-2-RBD_MAP_Vir_mAbs.csv"],
             },
         },
     },

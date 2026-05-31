@@ -7,7 +7,7 @@ sys.path.insert(0, f"{project_root}")
 project = "mutcleaner"
 copyright = "2026, Ziyu Shi, Yuxiang Tang"
 author = "Yuxiang Tang and Ziyu Shi"
-release = "v0.1.0"
+release = "0.2.0"
 
 extensions = [
     "sphinx.ext.autodoc",

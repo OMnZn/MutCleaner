@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from .rbd_ace2_custom_cleaners import (
+from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
     apply_mutations_preserving_wild_type,
     prepare_ace2_binding_records,

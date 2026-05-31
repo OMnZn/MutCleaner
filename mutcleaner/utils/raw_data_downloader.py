@@ -659,17 +659,14 @@ def download_rbd_antibody_source_file(
     overwrite: bool = False,
     sub_dataset: Optional[
         Literal[
-            "AZ_Abs",
-            "HAARVI_sera",
             "Moderna",
             "Rockefeller",
             "Vir_mAbs",
-            "clinical_Abs",
         ]
     ] = None,
 ) -> Dict[str, str]:
     """
-    Download the source file(s) for the RBD_Antibody dataset from Hugging Face.
+    Download the source file(s) for the curated RBD_Antibody dataset bundle.
 
     Parameters
     ----------
@@ -686,14 +683,7 @@ def download_rbd_antibody_source_file(
         key: file name,
         value: local file path
     """
-    valid_sub_datasets = [
-        "AZ_Abs",
-        "HAARVI_sera",
-        "Moderna",
-        "Rockefeller",
-        "Vir_mAbs",
-        "clinical_Abs",
-    ]
+    valid_sub_datasets = ["Moderna", "Rockefeller", "Vir_mAbs"]
     if sub_dataset is not None and sub_dataset not in valid_sub_datasets:
         raise ValueError(
             f"Unsupported sub-dataset. Supported options: {valid_sub_datasets}"

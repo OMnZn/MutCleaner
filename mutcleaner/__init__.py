@@ -5,7 +5,7 @@ MutCleaner: An efficient framework for cleaning, standardizing, and processing b
 
 __author__ = "Yuxiang Tang and Ziyu Shi"
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from .core import (
     # Alphabet
@@ -27,6 +27,7 @@ from .core import (
 
 from .cleaners import (
     basic_cleaners,
+    rbd_antibody_cleaner,
     cdna_proteolysis_cleaner,
     human_domainome_sup2_cleaner,
     proteingym_dms_substitutions_cleaner,

@@ -176,32 +176,24 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_ACE2_Dataset/SARS-CoV-2-RBD_DMS_Omicron-EG5-FLip-BA286_bc_binding.csv">SARS-CoV-2-RBD_DMS_Omicron-EG5-FLip-BA286_bc_binding.csv</a></td>
     </tr>
     <tr>
-      <td rowspan="7" valign="middle">RBD Antibody Dataset</td>
+      <td rowspan="3" valign="middle">RBD Antibody Dataset</td>
       <td><a href="https://doi.org/10.1126/scitranslmed.abi9915">The SARS-CoV-2 mRNA-1273 vaccine elicits more RBD-focused neutralization, but with broader antibody binding within the RBD</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna_scores.csv">SARS-CoV-2-RBD_MAP_Moderna_scores.csv</a></td>
-    </tr>
-    <tr>
-      <td><a href="https://doi.org/10.1016/j.chom.2021.02.003">Comprehensive mapping of mutations in the SARS-CoV-2 receptor-binding domain that affect recognition by polyclonal human plasma antibodies</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv">SARS-CoV-2-RBD_MAP_HAARVI_sera_scores.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna.csv">SARS-CoV-2-RBD_MAP_Moderna.csv</a></td>
     </tr>
     <tr>
       <td><a href="https://doi.org/10.1038/s41467-021-24435-8">Mapping mutations to the SARS-CoV-2 RBD that escape binding by different classes of antibodies</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv">SARS-CoV-2-RBD_MAP_Rockefeller_scores.csv</a></td>
-    </tr>
-    <tr>
-      <td><a href="https://doi.org/10.1038/s41564-021-00972-2">Genetic and structural basis for SARS-CoV-2 variant neutralization by a two-antibody cocktail</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv">SARS-CoV-2-RBD_MAP_AZ_Abs_scores.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller.csv">SARS-CoV-2-RBD_MAP_Rockefeller.csv</a></td>
     </tr>
     <tr>
       <td><a href="https://doi.org/10.1038/s41586-021-03807-6">SARS-CoV-2 RBD antibodies that maximize breadth and resistance to escape</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv">SARS-CoV-2-RBD_MAP_Vir_mAbs_scores.csv</a></td>
-    </tr>
-    <tr>
-      <td><a href="https://doi.org/10.1126/science.abf9302">Prospective mapping of viral mutations that escape antibodies used to treat COVID-19</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv">SARS-CoV-2-RBD_MAP_clinical_Abs_scores.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs.csv">SARS-CoV-2-RBD_MAP_Vir_mAbs.csv</a></td>
     </tr>
   </tbody>
 </table>
+
+The current curated RBD antibody source bundle tracked in this project is
+the deduplicated three-table subset: `Moderna`, `Rockefeller`, and
+`Vir_mAbs`.
 
 
 ## Core Features
