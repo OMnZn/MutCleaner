@@ -46,12 +46,12 @@ from .human_myoglobin_cleaner import (
     create_human_myoglobin_cleaner,
 )
 from .rbd_ace2_cleaner import (
-    RBDACE2Config,
+    RBDACE2CleanerConfig,
     clean_rbd_ace2_dataset,
     create_rbd_ace2_cleaner,
 )
 from .rbd_antibody_cleaner import (
-    RBDAntibodyConfig,
+    RBDAntibodyCleanerConfig,
     clean_rbd_antibody_dataset,
     create_rbd_antibody_cleaner,
 )
@@ -84,10 +84,10 @@ __all__ = [
     "HumanMyoglobinCleanerConfig",
     "create_human_myoglobin_cleaner",
     "clean_human_myoglobin_dataset",
-    "RBDACE2Config",
+    "RBDACE2CleanerConfig",
     "create_rbd_ace2_cleaner",
     "clean_rbd_ace2_dataset",
-    "RBDAntibodyConfig",
+    "RBDAntibodyCleanerConfig",
     "create_rbd_antibody_cleaner",
     "clean_rbd_antibody_dataset",
 ]

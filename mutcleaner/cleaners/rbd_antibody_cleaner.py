@@ -12,6 +12,9 @@ from .base_config import BaseCleanerConfig
 from .basic_cleaners import (
     average_labels_by_name,
     convert_to_mutation_dataset_format,
+    convert_data_types,
+    extract_and_rename_columns,
+    filter_and_clean_data,
     merge_columns,
     read_dataset,
     subtract_labels_by_wt,
@@ -20,17 +23,16 @@ from .basic_cleaners import (
 from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
     apply_mutations_preserving_wild_type,
-    prepare_rbd_records,
+    standardize_rbd_antibody_records,
 )
 from ..core.dataset import MutationDataset
-from ..core.pipeline import Pipeline, create_pipeline, multiout_step
-from ..core.sequence import ProteinSequence
+from ..core.pipeline import Pipeline, create_pipeline
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Tuple, Union
 
 __all__ = [
-    "RBDAntibodyConfig",
+    "RBDAntibodyCleanerConfig",
     "create_rbd_antibody_cleaner",
     "clean_rbd_antibody_dataset",
 ]
@@ -48,16 +50,6 @@ DEFAULT_RBD_TARGET_NAME_ALIASES = {
 }
 
 
-@multiout_step(main="main", variants="variants")
-def capture_rbd_antibody_variants(
-    dataset: pd.DataFrame,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Keep WT-subtracted antibody rows in the pipeline and as a side artifact."""
-
-    result = dataset.reset_index(drop=True)
-    return result, result.copy()
-
-
 def __dir__() -> List[str]:
     """Return exported names."""
 
@@ -65,15 +57,17 @@ def __dir__() -> List[str]:
 
 
 @dataclass
-class RBDAntibodyConfig(BaseCleanerConfig):
+class RBDAntibodyCleanerConfig(BaseCleanerConfig):
     """Configuration for the RBD antibody cleaner."""
 
     reference_sequences: Dict[str, str] = field(
         default_factory=lambda: deepcopy(DEFAULT_RBD_REFERENCE_SEQUENCES)
     )
+
     target_name_aliases: Dict[str, str] = field(
         default_factory=lambda: deepcopy(DEFAULT_RBD_TARGET_NAME_ALIASES)
     )
+
     column_mapping: Dict[str, str] = field(
         default_factory=lambda: {
             "name": "name",
@@ -86,13 +80,31 @@ class RBDAntibodyConfig(BaseCleanerConfig):
             "pass_ACE2bind_expr_filter": "pass_ACE2bind_expr_filter",
         }
     )
+
+    filters: Dict[str, Any] = field(
+        default_factory=lambda: {
+            "pass_pre_count_filter": True,
+            "pass_ACE2bind_expr_filter": True,
+        }
+    )
+
+    drop_na_columns: List[str] = field(default_factory=lambda: ["target", "label"])
+
+    type_conversions: Dict[str, str] = field(default_factory=lambda: {"label": "float"})
+
     fallback_reference_sequence: Optional[str] = None
+
     require_known_reference_sequence: bool = True
+
     validate_mut_workers: int = 16
+
     process_workers: int = 16
+
     label_columns: List[str] = field(default_factory=lambda: ["label"])
+
     primary_label_column: str = "label"
-    pipeline_name: str = "RBDAntibody"
+
+    pipeline_name: str = "RBDAntibody pipeline"
 
     def validate(self) -> None:
         super().validate()
@@ -151,22 +163,22 @@ class RBDAntibodyConfig(BaseCleanerConfig):
 
 def create_rbd_antibody_cleaner(
     dataset_or_path: Optional[Union[pd.DataFrame, str, Path]] = None,
-    config: Optional[Union[RBDAntibodyConfig, Dict[str, Any], str, Path]] = None,
+    config: Optional[Union[RBDAntibodyCleanerConfig, Dict[str, Any], str, Path]] = None,
 ) -> Pipeline:
     """Create the RBD antibody cleaning pipeline."""
 
-    default_config = RBDAntibodyConfig()
+    default_config = RBDAntibodyCleanerConfig()
     if config is None:
         final_config = default_config
-    elif isinstance(config, RBDAntibodyConfig):
+    elif isinstance(config, RBDAntibodyCleanerConfig):
         final_config = config
     elif isinstance(config, dict):
         final_config = default_config.merge(config)
     elif isinstance(config, (str, Path)):
-        final_config = RBDAntibodyConfig.from_json(config)
+        final_config = RBDAntibodyCleanerConfig.from_json(config)
     else:
         raise TypeError(
-            "config must be RBDAntibodyConfig, dict, str, Path or None, "
+            "config must be RBDAntibodyCleanerConfig, dict, str, Path or None, "
             f"got {type(config)}"
         )
     final_config.validate()
@@ -180,15 +192,24 @@ def create_rbd_antibody_cleaner(
     pipeline = create_pipeline(dataset_or_path, final_config.pipeline_name)
     pipeline = (
         pipeline.delayed_then(
-            prepare_rbd_records,
-            mode="antibody",
-            reference_sequences=final_config.reference_sequences,
-            target_name_aliases=final_config.target_name_aliases,
+            extract_and_rename_columns,
             column_mapping=final_config.column_mapping,
-            fallback_reference_sequence=final_config.fallback_reference_sequence,
-            require_known_reference_sequence=(
-                final_config.require_known_reference_sequence
-            ),
+        )
+        .delayed_then(
+            filter_and_clean_data,
+            filters=final_config.filters,
+        )
+        .delayed_then(
+            convert_data_types,
+            type_conversions=final_config.type_conversions,
+        )
+        .delayed_then(
+            filter_and_clean_data,
+            drop_na_columns=final_config.drop_na_columns,
+        )
+        .delayed_then(
+            standardize_rbd_antibody_records,
+            target_name_aliases=final_config.target_name_aliases,
         )
         .delayed_then(
             validate_mutations,
@@ -212,9 +233,9 @@ def create_rbd_antibody_cleaner(
             sequence_column="sequence",
             fallback_reference_sequence=final_config.fallback_reference_sequence,
         )
-        # `group_name` is solely an internal WT-subtraction key used for multiple references and antibodies. 
-        # For the current antibody tables one file is usually one reference, 
-        # so `antibody_name` would often be enough on its own, 
+        # `group_name` is solely an internal WT-subtraction key used for multiple references and antibodies.
+        # For the current antibody tables one file is usually one reference,
+        # so `antibody_name` would often be enough on its own,
         # but we keep the combined key to preserve the existing downstream grouping behavior.
         .delayed_then(
             merge_columns,
@@ -242,7 +263,6 @@ def create_rbd_antibody_cleaner(
             in_place=True,
             drop_wt_row=True,
         )
-        .delayed_then(capture_rbd_antibody_variants)
         .delayed_then(
             convert_to_mutation_dataset_format,
             name_column="antibody_name",
@@ -273,25 +293,7 @@ def clean_rbd_antibody_dataset(
 
     pipeline.execute()
     dataset_df, reference_sequences = pipeline.data
-    summary_df = pipeline.get_artifact("prepare_rbd_records.summary")
-    summary = summary_df.iloc[0].to_dict()
-    source_reference_id = str(summary["reference_id"])
-
-    if isinstance(dataset_df, pd.DataFrame) and dataset_df.empty:
-        dataset = MutationDataset(name=pipeline.name)
-        reference_sequence = str(summary["reference_sequence"])
-        dataset.add_reference_sequence(
-            source_reference_id,
-            ProteinSequence(reference_sequence, name=source_reference_id),
-        )
-        logger.info(
-            "Successfully cleaned RBD antibody dataset: 0 mutation sets from 1 reference"
-        )
-        return pipeline, dataset
-
     dataset = MutationDataset.from_dataframe(dataset_df, reference_sequences)
-    for one_reference_sequence in dataset.reference_sequences.values():
-        one_reference_sequence.name = source_reference_id
     logger.info(
         "Successfully cleaned RBD antibody dataset: %s mutation sets from %s references",
         len(dataset.mutation_sets),

@@ -11,12 +11,15 @@ import pandas as pd
 from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
     apply_mutations_preserving_wild_type,
-    prepare_rbd_records,
+    standardize_rbd_ace2_records,
 )
 from .base_config import BaseCleanerConfig
 from .basic_cleaners import (
     average_labels_by_name,
     convert_to_mutation_dataset_format,
+    convert_data_types,
+    extract_and_rename_columns,
+    filter_and_clean_data,
     read_dataset,
     subtract_labels_by_wt,
     validate_mutations,
@@ -28,7 +31,7 @@ if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Tuple, Union
 
 __all__ = [
-    "RBDACE2Config",
+    "RBDACE2CleanerConfig",
     "create_rbd_ace2_cleaner",
     "clean_rbd_ace2_dataset",
 ]
@@ -64,6 +67,7 @@ DEFAULT_RBD_TARGET_NAME_ALIASES = {
     "BA286": "Omicron_BA286",
 }
 
+
 def __dir__() -> List[str]:
     """Return exported names.
 
@@ -77,7 +81,7 @@ def __dir__() -> List[str]:
 
 
 @dataclass
-class RBDACE2Config(BaseCleanerConfig):
+class RBDACE2CleanerConfig(BaseCleanerConfig):
     """Configuration for the RBD ACE2 cleaner.
 
     Attributes
@@ -111,16 +115,19 @@ class RBDACE2Config(BaseCleanerConfig):
         default_factory=lambda: {
             "target": "target",
             "aa_substitutions": "aa_substitutions",
-            "log10Ka": "log10Ka",
+            "log10Ka": "label",
             "variant_class": "variant_class",
             "n_aa_substitutions": "n_aa_substitutions",
         }
     )
+    filters: Dict[str, Any] = field(default_factory=dict)
+    drop_na_columns: List[str] = field(default_factory=lambda: ["target", "label"])
+    type_conversions: Dict[str, str] = field(default_factory=lambda: {"label": "float"})
     validate_mut_workers: int = 16
     process_workers: int = 16
     label_columns: List[str] = field(default_factory=lambda: ["label"])
     primary_label_column: str = "label"
-    pipeline_name: str = "RBDACE2"
+    pipeline_name: str = "RBDACE2 pipeline"
 
     def validate(self) -> None:
         """Validate RBD ACE2 cleaner configuration values.
@@ -145,7 +152,7 @@ class RBDACE2Config(BaseCleanerConfig):
         required_standard_columns = {
             "target",
             "aa_substitutions",
-            "log10Ka",
+            "label",
             "variant_class",
         }
         missing_standard_columns = required_standard_columns - set(
@@ -169,7 +176,7 @@ class RBDACE2Config(BaseCleanerConfig):
 def create_rbd_ace2_cleaner(
     dataset_or_path: Optional[Union[pd.DataFrame, str, Path]] = None,
     config: Optional[
-        Union[RBDACE2Config, Dict[str, Any], str, Path]
+        Union[RBDACE2CleanerConfig, Dict[str, Any], str, Path]
     ] = None,
 ) -> Pipeline:
     """Create the RBD ACE2 cleaning pipeline.
@@ -178,7 +185,7 @@ def create_rbd_ace2_cleaner(
     ----------
     dataset_or_path : Optional[Union[pd.DataFrame, str, Path]], default=None
         Raw RBD ACE2 dataframe or input file path.
-    config : Optional[Union[RBDACE2Config, Dict[str, Any], str, Path]], default=None
+    config : Optional[Union[RBDACE2CleanerConfig, Dict[str, Any], str, Path]], default=None
         Cleaner configuration object, partial configuration dictionary, JSON path,
         or ``None`` to use the built-in default configuration.
 
@@ -193,18 +200,18 @@ def create_rbd_ace2_cleaner(
         If ``dataset_or_path`` or ``config`` uses an unsupported type.
     """
 
-    default_config = RBDACE2Config()
+    default_config = RBDACE2CleanerConfig()
     if config is None:
         final_config = default_config
-    elif isinstance(config, RBDACE2Config):
+    elif isinstance(config, RBDACE2CleanerConfig):
         final_config = config
     elif isinstance(config, dict):
         final_config = default_config.merge(config)
     elif isinstance(config, (str, Path)):
-        final_config = RBDACE2Config.from_json(config)
+        final_config = RBDACE2CleanerConfig.from_json(config)
     else:
         raise TypeError(
-            "config must be RBDACE2Config, dict, str, Path or None, "
+            "config must be RBDACE2CleanerConfig, dict, str, Path or None, "
             f"got {type(config)}"
         )
     final_config.validate()
@@ -218,12 +225,24 @@ def create_rbd_ace2_cleaner(
     pipeline = create_pipeline(dataset_or_path, final_config.pipeline_name)
     pipeline = (
         pipeline.delayed_then(
-            prepare_rbd_records,
-            mode="ace2",
-            reference_sequences=final_config.reference_sequences,
-            target_name_aliases=final_config.target_name_aliases,
+            extract_and_rename_columns,
             column_mapping=final_config.column_mapping,
-            label_column="log10Ka",
+        )
+        .delayed_then(
+            filter_and_clean_data,
+            filters=final_config.filters,
+        )
+        .delayed_then(
+            convert_data_types,
+            type_conversions=final_config.type_conversions,
+        )
+        .delayed_then(
+            filter_and_clean_data,
+            drop_na_columns=final_config.drop_na_columns,
+        )
+        .delayed_then(
+            standardize_rbd_ace2_records,
+            target_name_aliases=final_config.target_name_aliases,
         )
         .delayed_then(
             validate_mutations,

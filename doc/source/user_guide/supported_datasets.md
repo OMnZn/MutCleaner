@@ -773,40 +773,39 @@ from mutcleaner.cleaners import (
 )
 
 def main():
-    raw_data_dir = Path("raw_dataset/RBD_ACE2_Dataset")
-    raw_data_dir.mkdir(parents=True, exist_ok=True)
+    # Prepare data
+    download_rbd_ace2_source_file("raw_dataset/RBD_ACE2_Dataset")
 
+    # File settings
+    raw_data_dir = Path("raw_dataset/RBD_ACE2_Dataset")
     dataset_file_paths = sorted(raw_data_dir.glob("*.csv"))
-    if not dataset_file_paths:
-        download_rbd_ace2_source_file(str(raw_data_dir))
-        dataset_file_paths = sorted(raw_data_dir.glob("*.csv"))
 
     for dataset_file_path in dataset_file_paths:
         dataset_name = dataset_file_path.stem
-        artifact_path = Path("logs/RBD_ACE2_Dataset") / dataset_name / "artifacts.pkl"
         artifact_csv_dir = Path("logs/RBD_ACE2_Dataset") / dataset_name
+        artifact_path = artifact_csv_dir / "artifacts.pkl"
         cleaned_dataset_dir = (
             Path("cleaned_dataset/cleaned_RBD_ACE2_Dataset") / dataset_name
         )
 
         artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
+        # Clean data
         rbd_ace2_cleaning_pipeline = create_rbd_ace2_cleaner(dataset_file_path)
         rbd_ace2_cleaning_pipeline, rbd_ace2_dataset = clean_rbd_ace2_dataset(
             rbd_ace2_cleaning_pipeline
         )
 
+        # Save data
         rbd_ace2_dataset.save(str(cleaned_dataset_dir))
         rbd_ace2_cleaning_pipeline.save_artifacts(artifact_path)
 
+        # Read artifacts from the pickle file
         with open(artifact_path, "rb") as file:
             artifacts = pickle.load(file)
 
         for artifact_name, artifact_df in artifacts.items():
-            artifact_df.to_csv(
-                artifact_csv_dir / f"{artifact_name}.csv",
-                index=False,
-            )
+            artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
 
 if __name__ == "__main__":
     import multiprocessing
@@ -841,7 +840,7 @@ Alternatively, you can download it from
 
 ### Advanced Settings
 
-See {py:class}`mutcleaner.cleaners.RBDACE2Config` for details.
+See {py:class}`mutcleaner.cleaners.RBDACE2CleanerConfig` for details.
 
 ## RBD-Antibody Dataset
 
@@ -861,40 +860,39 @@ from mutcleaner.cleaners import (
 )
 
 def main():
-    raw_data_dir = Path("raw_dataset/RBD_Antibody_Dataset")
-    raw_data_dir.mkdir(parents=True, exist_ok=True)
+    # Prepare data
+    download_rbd_antibody_source_file("raw_dataset/RBD_Antibody_Dataset")
 
+    # File settings
+    raw_data_dir = Path("raw_dataset/RBD_Antibody_Dataset")
     dataset_file_paths = sorted(raw_data_dir.glob("*.csv"))
-    if not dataset_file_paths:
-        download_rbd_antibody_source_file(str(raw_data_dir))
-        dataset_file_paths = sorted(raw_data_dir.glob("*.csv"))
 
     for dataset_file_path in dataset_file_paths:
         dataset_name = dataset_file_path.stem
-        artifact_path = Path("logs/RBD_Antibody_Dataset") / dataset_name / "artifacts.pkl"
         artifact_csv_dir = Path("logs/RBD_Antibody_Dataset") / dataset_name
+        artifact_path = artifact_csv_dir / "artifacts.pkl"
         cleaned_dataset_dir = (
             Path("cleaned_dataset/cleaned_RBD_Antibody_Dataset") / dataset_name
         )
 
         artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
+        # Clean data
         rbd_antibody_cleaning_pipeline = create_rbd_antibody_cleaner(dataset_file_path)
         rbd_antibody_cleaning_pipeline, rbd_antibody_dataset = clean_rbd_antibody_dataset(
             rbd_antibody_cleaning_pipeline
         )
 
+        # Save data
         rbd_antibody_dataset.save(str(cleaned_dataset_dir))
         rbd_antibody_cleaning_pipeline.save_artifacts(artifact_path)
 
+        # Read artifacts from the pickle file
         with open(artifact_path, "rb") as file:
             artifacts = pickle.load(file)
 
         for artifact_name, artifact_df in artifacts.items():
-            artifact_df.to_csv(
-                artifact_csv_dir / f"{artifact_name}.csv",
-                index=False,
-            )
+            artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
 
 if __name__ == "__main__":
     import multiprocessing
@@ -926,29 +924,9 @@ Supported sub-datasets:
 - `Rockefeller`
 - `Vir_mAbs`
 
-The current curated antibody raw-data bundle used by this project
-contains only these three source tables. Historical duplicate-only
-subsets were removed from the curated local bundle after dataset
-deduplication. The current hosted source files are:
-
-- [SARS-CoV-2-RBD_MAP_Moderna.csv](https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Moderna.csv)
-- [SARS-CoV-2-RBD_MAP_Rockefeller.csv](https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Rockefeller.csv)
-- [SARS-CoV-2-RBD_MAP_Vir_mAbs.csv](https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs.csv)
-
-The hosted source URL for this curated bundle may change over time, so
-the recommended workflow is to use
-`download_rbd_antibody_source_file(...)` instead of hard-coding a
-public file URL in downstream scripts.
-
-By default, the cleaner treats the raw `score` column as the label
-source, averages replicated rows for the same antibody and mutation,
-and subtracts the corresponding WT label within each antibody group.
-When saved through `MutationDataset.save(...)`, the cleaned antibody
-dataset is grouped by antibody name, while each `wt.fasta` still uses
-the shared RBD reference sequence for that antibody panel.
-
-
+Alternatively, you can download it from
+[Hugging Face](https://huggingface.co/datasets/xulab-research/MutCleaner/tree/main/RBD_Antibody_Dataset).
 
 ### Advanced Settings
 
-See {py:class}`mutcleaner.cleaners.RBDAntibodyConfig` for details.
+See {py:class}`mutcleaner.cleaners.RBDAntibodyCleanerConfig` for details.
