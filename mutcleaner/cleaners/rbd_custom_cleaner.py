@@ -10,7 +10,8 @@ if TYPE_CHECKING:
 
 __all__ = [
     "standardize_rbd_target_names",
-    "mark_wild_type_mutations",
+    "standardize_rbd_ace2_records",
+    "standardize_rbd_antibody_records",
     "add_reference_sequences_by_target",
 ]
 
@@ -42,20 +43,43 @@ def standardize_rbd_target_names(
 
 
 @pipeline_step
-def mark_wild_type_mutations(
+def standardize_rbd_ace2_records(
     dataset: pd.DataFrame,
     mutation_column: str = "mut_info",
     variant_class_column: str = "variant_class",
 ) -> pd.DataFrame:
-    """Mark rows annotated as wild type in the mutation column."""
+    """Mark wild-type RBD-ACE2 records in the mutation column."""
 
-    result = dataset.copy()
-    variant_class = (
-        result[variant_class_column].astype("string").str.strip().str.lower()
-    )
-    wt_mask = variant_class.eq("wildtype").fillna(False)
-    result.loc[wt_mask, mutation_column] = "WT"
-    return result.reset_index(drop=True)
+    def _mark_wild_type_mutations(dataset: pd.DataFrame) -> pd.DataFrame:
+        result = dataset.copy()
+        variant_class = (
+            result[variant_class_column].astype("string").str.strip().str.lower()
+        )
+        wt_mask = variant_class.eq("wildtype").fillna(False)
+        result.loc[wt_mask, mutation_column] = "WT"
+        return result.reset_index(drop=True)
+
+    return _mark_wild_type_mutations(dataset)
+
+
+@pipeline_step
+def standardize_rbd_antibody_records(
+    dataset: pd.DataFrame,
+    mutation_column: str = "mut_info",
+    variant_class_column: str = "variant_class",
+) -> pd.DataFrame:
+    """Mark wild-type RBD-antibody records in the mutation column."""
+
+    def _mark_wild_type_mutations(dataset: pd.DataFrame) -> pd.DataFrame:
+        result = dataset.copy()
+        variant_class = (
+            result[variant_class_column].astype("string").str.strip().str.lower()
+        )
+        wt_mask = variant_class.eq("wildtype").fillna(False)
+        result.loc[wt_mask, mutation_column] = "WT"
+        return result.reset_index(drop=True)
+
+    return _mark_wild_type_mutations(dataset)
 
 
 @pipeline_step

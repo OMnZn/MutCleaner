@@ -23,7 +23,7 @@ from .basic_cleaners import (
 )
 from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
-    mark_wild_type_mutations,
+    standardize_rbd_antibody_records,
     standardize_rbd_target_names,
 )
 from ..core.dataset import MutationDataset
@@ -211,7 +211,7 @@ def create_rbd_antibody_cleaner(
             name_column="reference_id",
         )
         .delayed_then(
-            mark_wild_type_mutations,
+            standardize_rbd_antibody_records,
         )
         .delayed_then(
             validate_mutations,

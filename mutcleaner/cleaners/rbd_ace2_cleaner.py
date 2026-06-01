@@ -10,7 +10,7 @@ import pandas as pd
 
 from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
-    mark_wild_type_mutations,
+    standardize_rbd_ace2_records,
     standardize_rbd_target_names,
 )
 from .base_config import BaseCleanerConfig
@@ -242,7 +242,7 @@ def create_rbd_ace2_cleaner(
             name_column="name",
         )
         .delayed_then(
-            mark_wild_type_mutations,
+            standardize_rbd_ace2_records,
         )
         .delayed_then(
             validate_mutations,
