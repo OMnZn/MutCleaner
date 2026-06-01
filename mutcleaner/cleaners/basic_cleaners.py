@@ -637,13 +637,13 @@ def extract_and_rename_columns(
     return extracted_dataset
 
 
-@pipeline_step
+@multiout_step(main="success", failed="failed")
 def filter_and_clean_data(
     dataset: pd.DataFrame,
     filters: Optional[Dict[str, Union[Any, Callable[[pd.Series], pd.Series]]]] = None,
     exclude_patterns: Optional[Dict[str, Union[str, List[str]]]] = None,
     drop_na_columns: Optional[List[str]] = None,
-) -> pd.DataFrame:
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Filter and clean data based on specified conditions.
 
@@ -665,8 +665,13 @@ def filter_and_clean_data(
 
     Returns
     -------
-    pd.DataFrame
-        Filtered and cleaned dataset
+    Tuple[pd.DataFrame, pd.DataFrame]
+        A tuple containing two datasets:
+
+        - successful_dataset : pd.DataFrame
+            Rows that pass all filtering conditions.
+        - failed_dataset : pd.DataFrame
+            Rows that fail at least one filtering condition.
 
     Examples
     --------
@@ -679,9 +684,9 @@ def filter_and_clean_data(
     >>> filters = {'score': lambda x: x != '-'}
     >>> exclude_patterns = {'mut_type': ['wt', 'insert']}
     >>> drop_na_columns = ['quality']
-    >>> result = filter_and_clean_data(df, filters, exclude_patterns, drop_na_columns)
-    >>> print(len(result))  # Should be 2 (A123B and E789F rows)
-    2
+    >>> successful, failed = filter_and_clean_data(df, filters, exclude_patterns, drop_na_columns)
+    >>> print(len(successful))  # Should be 1 (A123B row)
+    1
     """
     tqdm.write("Filtering and cleaning data...")
     original_len = len(dataset)
@@ -737,15 +742,20 @@ def filter_and_clean_data(
         for mask in filter_masks[1:]:
             combined_mask &= mask
 
-        result = dataset.loc[combined_mask].copy()
+        successful_dataset = dataset.loc[combined_mask].copy()
     else:
-        result = dataset.copy()
+        combined_mask = pd.Series(True, index=dataset.index)
+
+    successful_dataset = dataset.loc[combined_mask].copy()
+    failed_dataset = dataset.loc[~combined_mask].copy()
 
     tqdm.write(
-        f"Filtered data: {original_len} -> {len(result)} rows "
-        f"({len(result)/original_len*100:.1f}% retained)"
+        f"Filtered data: {original_len} -> {len(successful_dataset)} rows "
+        f"({len(successful_dataset)/original_len*100:.1f}% retained), "
+        f"{len(failed_dataset)} rows failed"
     )
-    return result
+
+    return successful_dataset, failed_dataset
 
 
 @pipeline_step
