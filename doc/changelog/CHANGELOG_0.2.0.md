@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [HEAD] - 2026-06-02
+## [0.2.0] - 2026-06-02
 
 ### Added
 
@@ -17,12 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Contributors
 
-A total of 4 people contributed to this release. People with a "+" by their names contributed a patch for the first time.
+A total of 2 people contributed to this release. People with a "+" by their names contributed a patch for the first time.
 
 - Yancheng Shi +
-- Ziyu Shi +
-- shiyancheng +
-- yukiko-shi
+- Ziyu Shi
 
 
-**Full Changelog**: [v0.1.0..HEAD](https://github.com/xulab-research/MutCleaner/compare/v0.1.0..HEAD)
+**Full Changelog**: [v0.1.0..v0.2.0](https://github.com/xulab-research/MutCleaner/compare/v0.1.0..v0.2.0)
