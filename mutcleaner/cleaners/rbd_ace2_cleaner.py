@@ -10,7 +10,7 @@ import pandas as pd
 
 from .rbd_custom_cleaner import (
     add_reference_sequences_by_target,
-    standardize_rbd_ace2_records,
+    mark_wild_type_in_mut_info,
     standardize_rbd_target_names,
 )
 from .base_config import BaseCleanerConfig
@@ -106,12 +106,16 @@ class RBDACE2CleanerConfig(BaseCleanerConfig):
         Pipeline name.
     """
 
+    # Target/reference sequence configuration
     reference_sequences: Dict[str, str] = field(
         default_factory=lambda: deepcopy(DEFAULT_RBD_REFERENCE_SEQUENCES)
     )
+
     target_name_aliases: Dict[str, str] = field(
         default_factory=lambda: deepcopy(DEFAULT_RBD_TARGET_NAME_ALIASES)
     )
+
+    # Column preparation configuration
     column_mapping: Dict[str, str] = field(
         default_factory=lambda: {
             "target": "name",
@@ -121,12 +125,21 @@ class RBDACE2CleanerConfig(BaseCleanerConfig):
             "n_aa_substitutions": "n_aa_substitutions",
         }
     )
+
     drop_na_columns: List[str] = field(default_factory=lambda: ["name", "label"])
+
     type_conversions: Dict[str, str] = field(default_factory=lambda: {"label": "float"})
+
+    # Mutation processing configuration
     validate_mut_workers: int = 16
+
     process_workers: int = 16
+
+    # Label and pipeline configuration
     label_columns: List[str] = field(default_factory=lambda: ["label"])
+
     primary_label_column: str = "label"
+
     pipeline_name: str = "RBDACE2 pipeline"
 
     def validate(self) -> None:
@@ -175,9 +188,7 @@ class RBDACE2CleanerConfig(BaseCleanerConfig):
 
 def create_rbd_ace2_cleaner(
     dataset_or_path: Optional[Union[pd.DataFrame, str, Path]] = None,
-    config: Optional[
-        Union[RBDACE2CleanerConfig, Dict[str, Any], str, Path]
-    ] = None,
+    config: Optional[Union[RBDACE2CleanerConfig, Dict[str, Any], str, Path]] = None,
 ) -> Pipeline:
     """Create the RBD ACE2 cleaning pipeline.
 
@@ -214,7 +225,14 @@ def create_rbd_ace2_cleaner(
             "config must be RBDACE2CleanerConfig, dict, str, Path or None, "
             f"got {type(config)}"
         )
-    final_config.validate()
+
+    target_name_column = final_config.column_mapping.get("target", "target")
+    mutation_column = final_config.column_mapping.get(
+        "aa_substitutions", "aa_substitutions"
+    )
+    variant_class_column = final_config.column_mapping.get(
+        "variant_class", "variant_class"
+    )
 
     logger.info(
         "RBD ACE2 dataset will be cleaned with pipeline: %s",
@@ -239,14 +257,16 @@ def create_rbd_ace2_cleaner(
         .delayed_then(
             standardize_rbd_target_names,
             target_name_aliases=final_config.target_name_aliases,
-            name_column="name",
+            name_column=target_name_column,
         )
         .delayed_then(
-            standardize_rbd_ace2_records,
+            mark_wild_type_in_mut_info,
+            mutation_column=mutation_column,
+            variant_class_column=variant_class_column,
         )
         .delayed_then(
             validate_mutations,
-            mutation_column="mut_info",
+            mutation_column=mutation_column,
             format_mutations=True,
             mutation_sep=" ",
             is_zero_based=False,
@@ -256,14 +276,14 @@ def create_rbd_ace2_cleaner(
         )
         .delayed_then(
             average_labels_by_name,
-            name_columns=["name", "mut_info"],
+            name_columns=[target_name_column, mutation_column],
             label_columns=final_config.label_columns,
         )
         .delayed_then(
             subtract_labels_by_wt,
-            name_column="name",
+            name_column=target_name_column,
             label_columns=final_config.label_columns,
-            mutation_column="mut_info",
+            mutation_column=mutation_column,
             wt_identifier="WT",
             in_place=True,
             drop_wt_row=True,
@@ -271,14 +291,14 @@ def create_rbd_ace2_cleaner(
         .delayed_then(
             add_reference_sequences_by_target,
             reference_sequences=final_config.reference_sequences,
-            name_column="name",
+            name_column=target_name_column,
             sequence_column="sequence",
         )
         .delayed_then(
             apply_mutations_to_sequences,
             sequence_column="sequence",
-            name_column="name",
-            mutation_column="mut_info",
+            name_column=target_name_column,
+            mutation_column=mutation_column,
             mutation_sep=",",
             is_zero_based=True,
             sequence_type="protein",
@@ -286,8 +306,8 @@ def create_rbd_ace2_cleaner(
         )
         .delayed_then(
             convert_to_mutation_dataset_format,
-            name_column="name",
-            mutation_column="mut_info",
+            name_column=target_name_column,
+            mutation_column=mutation_column,
             sequence_column="sequence",
             mutated_sequence_column="mut_seq",
             label_column=final_config.primary_label_column,
