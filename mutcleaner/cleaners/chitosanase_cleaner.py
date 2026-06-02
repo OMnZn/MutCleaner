@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -55,11 +55,27 @@ class ChitosanaseCleanerConfig(BaseCleanerConfig):
         Human-readable pipeline name used in logs and artifacts.
     wt_separator : str
         Token that separates CSV block and WT sequence in raw files.
+    column_mapping : Dict[str, str]
+        Mapping from raw Chitosanase columns to pipeline column names.
+    columns_to_add : Dict[str, Any]
+        Constant columns to attach during preprocessing.
     """
 
     infer_mut_workers: int = 16
     pipeline_name: str = "Chitosanase"
     wt_separator: str = '">wt'
+    column_mapping: dict[str, str] = field(
+        default_factory=lambda: {
+            "aa_mut": "mut_info",
+            "Tm": "label",
+            "wt_seq": "sequence",
+        }
+    )
+    columns_to_add: dict[str, Any] = field(
+        default_factory=lambda: {
+            "name": "Chitosanase",
+        }
+    )
 
     def validate(self) -> None:
         super().validate()
@@ -110,46 +126,40 @@ def create_chitosanase_cleaner(
 
     try:
         pipeline = create_pipeline(dataset_or_path, final_config.pipeline_name)
+        mutation_column = final_config.column_mapping.get("aa_mut", "aa_mut")
+        label_column = final_config.column_mapping.get("Tm", "Tm")
+        sequence_column = final_config.column_mapping.get("wt_seq", "wt_seq")
 
         # Add cleaning steps
         pipeline = (
             pipeline.delayed_then(parse_chitosanase_raw_file, wt_separator=final_config.wt_separator)
             .delayed_then(filter_and_clean_data, drop_na_columns=["Tm"])
-            .delayed_then(convert_data_types, type_conversions={"Tm": np.float64})
+            .delayed_then(convert_data_types, type_conversions={"Tm": np.float32})
             .delayed_then(
                 extract_and_rename_columns,
                 column_mapping={
-                    "aa_mut": "mut_info",
-                    "Tm": "Tm",
-                    "wt_seq": "sequence",
+                    "aa_mut": mutation_column,
+                    "Tm": label_column,
+                    "wt_seq": sequence_column,
                 },
             )
             .delayed_then(
                 add_columns,
-                columns_to_add={"name": "Chitosanase"},
+                columns_to_add=final_config.columns_to_add,
             )
             .delayed_then(
                 subtract_labels_by_wt,
                 name_column="name",
-                label_columns="Tm",
-                mutation_column="mut_info",
+                label_columns=label_column,
+                mutation_column=mutation_column,
                 wt_identifier="WT",
                 in_place=True,
                 drop_wt_row=True,
             )
             .delayed_then(
-                extract_and_rename_columns,
-                column_mapping={
-                    "name": "name",
-                    "mut_info": "mut_info",
-                    "sequence": "sequence",
-                    "Tm": "dTm",
-                },
-            )
-            .delayed_then(
                 apply_mutations_to_sequences,
-                sequence_column="sequence",
-                mutation_column="mut_info",
+                sequence_column=sequence_column,
+                mutation_column=mutation_column,
                 sequence_type="protein",
                 is_zero_based=False,
                 num_workers=final_config.infer_mut_workers,
@@ -157,10 +167,10 @@ def create_chitosanase_cleaner(
             .delayed_then(
                 convert_to_mutation_dataset_format,
                 name_column="name",
-                mutation_column="mut_info",
-                sequence_column="sequence",
+                mutation_column=mutation_column,
+                sequence_column=sequence_column,
                 mutated_sequence_column="mut_seq",
-                label_column="dTm",
+                label_column=label_column,
                 is_zero_based=False,
             )
         )
