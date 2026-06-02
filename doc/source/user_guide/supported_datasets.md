@@ -874,7 +874,7 @@ def main():
     # File settings
     for dataset_filepath in sorted(raw_data_dir.glob("*.csv")):
         data_file = dataset_filepath.stem
-        artifact_path = Path(f"logs/Chitosanase_Dataset/{data_file}/artifacts.pkl")
+        artifact_path = Path(f"logs/Chitosanase_Dataset/artifacts.pkl")
         artifact_csv_dir = Path(f"logs/Chitosanase_Dataset/{data_file}")
 
         artifact_csv_dir.mkdir(parents=True, exist_ok=True)
