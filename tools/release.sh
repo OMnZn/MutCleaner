@@ -22,7 +22,7 @@ pytest tests/ -v
 echo "[2/8] Updating version to $VERSION..."
 OLD_VERSION=$(grep 'version = ' pyproject.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
 sed -i "s/version = \"$OLD_VERSION\"/version = \"$VERSION\"/" pyproject.toml
-sed -i "s/__version__ = \"$OLD_VERSION\"/__version__ = \"$VERSION\"/" tidymut/__init__.py
+sed -i "s/__version__ = \"$OLD_VERSION\"/__version__ = \"$VERSION\"/" mutcleaner/__init__.py
 sed -i "s/release = \"$OLD_VERSION\"/release = \"$VERSION\"/" doc/source/conf.py
 
 echo "[3/8] Generating CHANGELOG..."
@@ -30,7 +30,7 @@ LAST_TAG=$(git describe --tags --abbrev=0)
 
 python tools/changelog.py \
     "$GITHUB_TOKEN" \
-    "xulab-research/TidyMut" \
+    "xulab-research/MutCleaner" \
     "$LAST_TAG..HEAD" \
     --template keepachangelog \
     --output "./doc/changelog/CHANGELOG_$1.md"
@@ -43,7 +43,7 @@ echo "[5/8] Checking distribution..."
 twine check dist/*
 
 echo "[6/8] Committing changes..."
-git add pyproject.toml tidymut/__init__.py doc/source/conf.py "doc/changelog/CHANGELOG_$VERSION.md"
+git add pyproject.toml mutcleaner/__init__.py doc/source/conf.py "doc/changelog/CHANGELOG_$VERSION.md"
 git commit -m "chore: bump version to $VERSION"
 git push origin main
 
@@ -60,6 +60,6 @@ echo "Release v$VERSION completed!"
 echo ""
 echo "Next steps:"
 echo "1. Create GitHub Release at:"
-echo "   https://github.com/xulab-research/TidyMut/releases/new?tag=v$VERSION"
-echo "2. Verify PyPI: https://pypi.org/project/tidymut/$VERSION/"
-echo "3. Verify docs: https://xulab-research.github.io/test/"
+echo "   https://github.com/xulab-research/MutCleaner/releases/new?tag=v$VERSION"
+echo "2. Verify PyPI: https://pypi.org/project/mutcleaner/$VERSION/"
+echo "3. Verify docs: https://xulab-research.github.io/MutCleaner/"
