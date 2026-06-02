@@ -33,12 +33,19 @@ git pull --ff-only origin main
 echo "[2/9] Running tests..."
 pytest tests/ -v
 
-echo "[3/9] Updating version..."
-OLD_VERSION=$(grep 'version = ' pyproject.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+if grep -q '^version = ' pyproject.toml; then
+    sed -i -E "s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+else
+    echo "pyproject.toml uses dynamic version; package version will come from tag v$VERSION"
+fi
 
-sed -i "s/version = \"$OLD_VERSION\"/version = \"$VERSION\"/" pyproject.toml
-sed -i "s/__version__ = \"$OLD_VERSION\"/__version__ = \"$VERSION\"/" mutcleaner/__init__.py
-sed -i "s/release = \"$OLD_VERSION\"/release = \"$VERSION\"/" doc/source/conf.py
+if grep -q '^__version__ = ' mutcleaner/__init__.py; then
+    sed -i -E "s/^__version__ = \".*\"/__version__ = \"$VERSION\"/" mutcleaner/__init__.py
+fi
+
+if grep -q '^release = ' doc/source/conf.py; then
+    sed -i -E "s/^release = \".*\"/release = \"$VERSION\"/" doc/source/conf.py
+fi
 
 echo "[4/9] Generating changelog..."
 LAST_TAG=$(git describe --tags --abbrev=0)
