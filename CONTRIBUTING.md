@@ -51,7 +51,7 @@ Generate changelog.md file everytime we publish a new release:
 - Before **each release** (beta or stable), please update `tools/generate_changelog.sh` and run:
 
 ```bash
-cd path/to/tidymut
+cd path/to/MutCleaner
 bash tools/generate_changelog.sh
 ```
 
