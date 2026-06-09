@@ -62,6 +62,12 @@ from .chitosanase_cleaner import (
     clean_chitosanase_dataset,
 )
 
+from .cdna_mgnify_cleaner import (
+    MGnifyCleanerConfig,
+    create_mgnify_cleaner,
+    clean_mgnify_dataset,
+)
+
 __all__ = [
     "CDNAProteolysisCleanerConfig",
     "create_cdna_proteolysis_cleaner",
@@ -99,4 +105,7 @@ __all__ = [
     "RBDAntibodyCleanerConfig",
     "create_rbd_antibody_cleaner",
     "clean_rbd_antibody_dataset",
+    "MGnifyCleanerConfig",
+    "create_mgnify_cleaner",
+    "clean_mgnify_dataset",
 ]
