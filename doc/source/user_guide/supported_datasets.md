@@ -943,7 +943,7 @@ def main():
         artifacts = pickle.load(file)
 
     for artifact_name, artifact_df in artifacts.items():
-        artifact_df.to_csv(artifact_csv_dir / f"{artifact_name}.csv", index=False)
+        artifact_df.to_csv(f"artifact_csv_dir/{artifact_name}.csv", index=False)
 
 
 if __name__ == "__main__":
