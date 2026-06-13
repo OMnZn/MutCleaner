@@ -908,7 +908,7 @@ if __name__ == "__main__":
 See {py:class}`mutcleaner.cleaners.ChitosanaseCleanerConfig` for details.
 
 
-## MGnify Dataset
+## ddG MGnify Dataset
 
 ### Basic Usage
 
@@ -925,14 +925,14 @@ from mutcleaner.cleaners import (
 
 def main():
     # Prepare data
-    download_mgnify_source_file("raw_dataset/MGnify_Dataset", overwrite=True)
+    download_mgnify_source_file("raw_dataset/ddg_mgnify_Dataset", overwrite=True)
 
-    artifact_path = Path("logs/MGnify_Dataset/artifacts.pkl")
-    artifact_csv_dir = Path("logs/MGnify_Dataset")
+    artifact_path = Path("logs/ddg_mgnify_Dataset/artifacts.pkl")
+    artifact_csv_dir = Path("logs/ddg_mgnify_Dataset")
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    mgnify_cleaning_pipeline = create_mgnify_cleaner(Path("raw_dataset/MGnify_Dataset/ddG_mgnify_protein_all.csv"))
+    mgnify_cleaning_pipeline = create_mgnify_cleaner(Path("raw_dataset/ddg_mgnify_Dataset/ddG_mgnify_protein_all.csv"))
     mgnify_cleaning_pipeline, mgnify_dataset = clean_mgnify_dataset(mgnify_cleaning_pipeline)
     
     # Save data
