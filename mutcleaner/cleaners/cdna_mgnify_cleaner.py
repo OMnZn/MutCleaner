@@ -1,4 +1,4 @@
-# mutcleaner/cleaners/mgnify_cleaners.py
+# mutcleaner/cleaners/cdna_mgnify_cleaners.py
 from __future__ import annotations
 
 import logging
