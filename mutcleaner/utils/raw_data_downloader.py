@@ -29,8 +29,8 @@ __all__ = [
     "download_human_myoglobin_source_file",
     "download_archstabms1e10_source_file",
     "download_ddg_dtm_source_file",
-    "download_chitosanase_source_file", 
-    "download_mgnify_source_file",
+    "download_chitosanase_dtm_source_file", 
+    "download_mgnify_ddg_source_file",
 ]
 
 
@@ -500,7 +500,7 @@ def download_ddg_dtm_source_file(
         "M1261", "S461", "S669", "S783", "S8754"
 
         Supported options for dataset_type="dtm":
-        "S4346", "S571"
+        "S4346", "S557"
 
     Returns
     -------
@@ -751,9 +751,9 @@ def download_rbd_ace2_source_file(
     )
 
 
-def download_chitosanase_source_file(dir: str, *, overwrite: bool = False) -> Dict[str, str]:
+def download_chitosanase_dtm_source_file(dir: str, *, overwrite: bool = False) -> Dict[str, str]:
     """
-    Download the source file for Chitosanase Dataset from the original source.
+    Download the source file for Chitosanase dTm Dataset from the original source.
 
     Parameters
     ----------
@@ -766,14 +766,14 @@ def download_chitosanase_source_file(dir: str, *, overwrite: bool = False) -> Di
     -------
     Dict[str, str]
         key: file name,
-        value: file path pointing to Chitosanase Dataset source file
+        value: file path pointing to Chitosanase dTm Dataset source file
     """
-    return download_source_file_from_huggingface("Chitosanase Dataset", dir, overwrite=overwrite)
+    return download_source_file_from_huggingface("Chitosanase dTm Dataset", dir, overwrite=overwrite)
 
 
-def download_mgnify_source_file(dir: str, *, overwrite: bool = False) -> Dict[str, str]:
+def download_mgnify_ddg_source_file(dir: str, *, overwrite: bool = False) -> Dict[str, str]:
     """
-    Download the source file for MGnify Dataset from the original source.
+    Download the source file for MGnify ddG Dataset from the original source.
 
     Parameters
     ----------
@@ -786,6 +786,6 @@ def download_mgnify_source_file(dir: str, *, overwrite: bool = False) -> Dict[st
     -------
     Dict[str, str]
         key: file name,
-        value: file path pointing to MGnify Dataset source file
+        value: file path pointing to MGnify ddG Dataset source file
     """
-    return download_source_file_from_huggingface("MGnify Dataset", dir, overwrite=overwrite)
+    return download_source_file_from_huggingface("MGnify ddG Dataset", dir, overwrite=overwrite)
