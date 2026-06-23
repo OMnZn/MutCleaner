@@ -1,4 +1,4 @@
-# mutcleaner/cleaners/cdna_mgnify_cleaners.py
+# mutcleaner/cleaners/mgnify_ddg_cleaner.py
 from __future__ import annotations
 
 import logging
@@ -24,9 +24,9 @@ if TYPE_CHECKING:
     from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 __all__ = [
-    "MGnifyCleanerConfig",
-    "create_mgnify_cleaner",
-    "clean_mgnify_dataset",
+    "MGnifyddGCleanerConfig",
+    "create_mgnify_ddg_cleaner",
+    "clean_mgnify_ddg_dataset",
 ]
 
 
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class MGnifyCleanerConfig(BaseCleanerConfig):
+class MGnifyddGCleanerConfig(BaseCleanerConfig):
     """
     Configuration class for MGnify protein stability dataset cleaner.
     Inherits from BaseCleanerConfig and adds MGnify-specific configuration options.
@@ -90,7 +90,6 @@ class MGnifyCleanerConfig(BaseCleanerConfig):
 
     def __post_init__(self):
         self.nearest_by = [(str(col), float(target)) for col, target in self.nearest_by]
-        super().__post_init__()
 
     def validate(self) -> None:
         """
@@ -115,7 +114,7 @@ class MGnifyCleanerConfig(BaseCleanerConfig):
             raise ValueError(f"Missing required target column mappings inside column_mapping: {missing}")
 
 
-def create_mgnify_cleaner(
+def create_mgnify_ddg_cleaner(
     dataset_or_path: Optional[Union[pd.DataFrame, str, Path]] = None,
     config: Optional[Union[MGnifyCleanerConfig, Dict[str, Any], str, Path]] = None,
 ) -> Pipeline:
@@ -138,16 +137,16 @@ def create_mgnify_cleaner(
         The constructed cleaning pipeline instance populated with delayed steps.
     """
     if config is None:
-        final_config = MGnifyCleanerConfig()
-    elif isinstance(config, MGnifyCleanerConfig):
+        final_config = MGnifyddGCleanerConfig()
+    elif isinstance(config, MGnifyddGCleanerConfig):
         final_config = config
     elif isinstance(config, dict):
-        default_config = MGnifyCleanerConfig()
+        default_config = MGnifyddGCleanerConfig()
         final_config = default_config.merge(config)
     elif isinstance(config, (str, Path)):
-        final_config = MGnifyCleanerConfig.from_json(config)
+        final_config = MGnifyddGCleanerConfig.from_json(config)
     else:
-        raise TypeError(f"config must be MGnifyCleanerConfig, dict, str, Path or None, " f"got {type(config)}")
+        raise TypeError(f"config must be MGnifyddGCleanerConfig, dict, str, Path or None, " f"got {type(config)}")
 
     logger.info(f"MGnify dataset will be cleaned with pipeline: {final_config.pipeline_name}")
     logger.debug(f"Configuration summary:\n{final_config.get_summary()}")
@@ -197,23 +196,23 @@ def create_mgnify_cleaner(
         raise RuntimeError(f"Failed to initialize MGnify cleaning pipeline: {str(e)}")
 
 
-def clean_mgnify_dataset(
+def clean_mgnify_ddg_dataset(
     pipeline: Pipeline,
 ) -> Tuple[Pipeline, MutationDataset]:
     """
-    Execute the MGnify dataset cleaning pipeline and package into a MutationDataset.
+    Execute the MGnify_ddG dataset cleaning pipeline and package into a MutationDataset.
 
     Parameters
     ----------
     pipeline : Pipeline
-        The pre-constructed MGnify dataset cleaning pipeline.
+        The pre-constructed MGnify_ddG dataset cleaning pipeline.
 
     Returns
     -------
     Tuple[Pipeline, MutationDataset]
         - pipeline: The executed pipeline instance.
         - mgnify_dataset: Standardized MutationDataset object containing data.csv,
-          wild_type.fasta, and metadata.json.
+          wt.fasta, and metadata.json.
     """
     try:
         pipeline.execute()
@@ -221,10 +220,10 @@ def clean_mgnify_dataset(
 
         mgnify_dataset = MutationDataset.from_dataframe(formatted_df, reference_sequences=ref_dict)
 
-        logger.info(f"Successfully executed MGnify pipeline: " f"Cleaned {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
+        logger.info(f"Successfully executed MGnify ddG pipeline: " f"Cleaned {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
 
         return pipeline, mgnify_dataset
 
     except Exception as e:
-        logger.error(f"Error encountered during MGnify pipeline execution: {str(e)}")
-        raise RuntimeError(f"Error encountered during MGnify pipeline execution: {str(e)}")
+        logger.error(f"Error encountered during MGnify ddG pipeline execution: {str(e)}")
+        raise RuntimeError(f"Error encountered during MGnify ddG pipeline execution: {str(e)}")
