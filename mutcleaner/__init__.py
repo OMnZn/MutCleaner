@@ -38,8 +38,8 @@ from .cleaners import (
     trpb_cleaner,
     antitoxin_pard3_cleaner,
     rbd_ace2_cleaner,
-    chitosanase_cleaner,
-    cdna_mgnify_cleaner,
+    chitosanase_dtm_cleaner,
+    mgnify_ddg_cleaner,
 )
 
 from .utils import (
@@ -57,6 +57,6 @@ from .utils import (
     download_antitoxin_pard3_source_file,
     download_rbd_antibody_source_file,
     download_rbd_ace2_source_file,
-    download_chitosanase_source_file,
-    download_mgnify_source_file,
+    download_chitosanase_dtm_source_file,
+    download_mgnify_ddg_source_file,
 )
