@@ -851,47 +851,46 @@ Alternatively, you can download it from
 See {py:class}`mutcleaner.cleaners.RBDAntibodyCleanerConfig` for details.
 
 
-## Chitosanase Dataset
+## Chitosanase dTm Dataset
 
 ### Basic Usage
 
-You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_chitosanase_source_file` for details):
+You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_chitosanase_dtm_source_file` for details):
 ```python
 import pickle
 from pathlib import Path
-from mutcleaner import download_chitosanase_source_file
+from mutcleaner import download_chitosanase_dtm_source_file
 from mutcleaner.cleaners import (
-    create_chitosanase_cleaner,
-    clean_chitosanase_dataset,
+    create_chitosanase_dtm_cleaner,
+    clean_chitosanase_dtm_dataset,
 )
 
 
 def main():
     # Prepare data
-    raw_data_dir = Path("raw_dataset/Chitosanase_Dataset")
-    download_chitosanase_source_file(raw_data_dir, overwrite=True)
+    raw_data_dir = Path("raw_dataset/Chitosanase_dTm_Dataset")
+    download_chitosanase_dtm_source_file(raw_data_dir, overwrite=True)
 
     # File settings
-    for dataset_filepath in sorted(raw_data_dir.glob("*.csv")):
-        artifact_path = Path(f"logs/Chitosanase_Dataset/artifacts.pkl")
-        artifact_csv_dir = Path(f"logs/Chitosanase_Dataset")
+    artifact_path = Path(f"logs/Chitosanase_dTm_Dataset/artifacts.pkl")
+    artifact_csv_dir = Path(f"logs/Chitosanase_dTm_Dataset")
 
-        artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+    artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
-        # Clean data
-        chitosanase_cleaning_pipeline = create_chitosanase_cleaner(dataset_filepath)
-        chitosanase_cleaning_pipeline, chitosanase_dataset = clean_chitosanase_dataset(chitosanase_cleaning_pipeline)
+    # Clean data
+    chitosanase_cleaning_pipeline = create_chitosanase_dtm_cleaner("raw_dataset/Chitosanase_dTm_Dataset/Chitosanase_dTm_Dataset.csv")
+    chitosanase_cleaning_pipeline, chitosanase_dataset = clean_chitosanase_dtm_dataset(chitosanase_cleaning_pipeline)
 
-        # Save data
-        chitosanase_dataset.save(f"cleaned_dataset/cleaned_Chitosanase_Dataset")
-        chitosanase_cleaning_pipeline.save_artifacts(artifact_path)
+    # Save data
+    chitosanase_dataset.save(f"cleaned_dataset/cleaned_Chitosanase_dTm_Dataset")
+    chitosanase_cleaning_pipeline.save_artifacts(artifact_path)
 
-        # open the pickle file
-        with open(artifact_path, "rb") as file:
-            artifacts = pickle.load(file)
+    # open the pickle file
+    with open(artifact_path, "rb") as file:
+        artifacts = pickle.load(file)
 
-        for artifact_name, artifact_df in artifacts.items():
-            artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
+    for artifact_name, artifact_df in artifacts.items():
+        artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
 
 
 if __name__ == "__main__":
@@ -905,45 +904,45 @@ if __name__ == "__main__":
 
 ### Advanced Settings
 
-See {py:class}`mutcleaner.cleaners.ChitosanaseCleanerConfig` for details.
+See {py:class}`mutcleaner.cleaners.ChitosanasedTmCleanerConfig` for details.
 
 
-## ddG MGnify Dataset
+## MGnify ddG Dataset
 
 ### Basic Usage
 
-You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_mgnify_source_file` for details):
+You can download the source file directly by running (see {py:func}`mutcleaner.utils.download_mgnify_ddg_source_file` for details):
 ```python
 import pickle
 from pathlib import Path
-from mutcleaner import download_mgnify_source_file
+from mutcleaner import download_mgnify_ddg_source_file
 from mutcleaner.cleaners import (
-    create_mgnify_cleaner,
-    clean_mgnify_dataset,
+    create_mgnify_ddg_cleaner,
+    clean_mgnify_ddg_dataset,
 )
 
 
 def main():
     # Prepare data
-    download_mgnify_source_file("raw_dataset/ddg_mgnify_Dataset", overwrite=True)
+    download_mgnify_ddg_source_file("raw_dataset/MGnify_ddG_Dataset", overwrite=True)
 
-    artifact_path = Path("logs/ddg_mgnify_Dataset/artifacts.pkl")
-    artifact_csv_dir = Path("logs/ddg_mgnify_Dataset")
+    artifact_path = Path("logs/MGnify_ddG_Dataset/artifacts.pkl")
+    artifact_csv_dir = Path("logs/MGnify_ddG_Dataset")
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    mgnify_cleaning_pipeline = create_mgnify_cleaner(Path("raw_dataset/ddg_mgnify_Dataset/ddG_mgnify_protein_all.csv"))
-    mgnify_cleaning_pipeline, mgnify_dataset = clean_mgnify_dataset(mgnify_cleaning_pipeline)
+    mgnify_cleaning_pipeline = create_mgnify_ddg_cleaner(Path("raw_dataset/MGnify_ddG_Dataset/MGnify_ddG_Dataset.csv"))
+    mgnify_cleaning_pipeline, mgnify_dataset = clean_mgnify_ddg_dataset(mgnify_cleaning_pipeline)
     
     # Save data
-    mgnify_dataset.save("cleaned_dataset/MGnify_cleaned")
+    mgnify_dataset.save("cleaned_dataset/cleaned_MGnify_ddG_Dataset")
     mgnify_cleaning_pipeline.save_artifacts(artifact_path)
 
     with open(artifact_path, "rb") as file:
         artifacts = pickle.load(file)
 
     for artifact_name, artifact_df in artifacts.items():
-        artifact_df.to_csv(f"artifact_csv_dir/{artifact_name}.csv", index=False)
+        artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
 
 
 if __name__ == "__main__":
@@ -958,4 +957,4 @@ if __name__ == "__main__":
 
 ### Advanced Settings
 
-See {py:class}`mutcleaner.cleaners.MGnifyCleanerConfig` for details.
+See {py:class}`mutcleaner.cleaners.MGnifyddGCleanerConfig` for details.
