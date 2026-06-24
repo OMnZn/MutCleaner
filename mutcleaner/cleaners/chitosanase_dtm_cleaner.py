@@ -1,3 +1,4 @@
+# mutcleaner/cleaners/chitosanase_dtm_cleaner.py
 from __future__ import annotations
 
 import logging
@@ -17,7 +18,7 @@ from .basic_cleaners import (
     filter_and_clean_data,
     subtract_labels_by_wt,
 )
-from .chitosanase_custom_cleaners import parse_chitosanase_raw_file
+from .chitosanase_dtm_custom_cleaner import parse_chitosanase_raw_file
 from ..core.dataset import MutationDataset
 from ..core.pipeline import Pipeline, create_pipeline
 
@@ -25,9 +26,9 @@ if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Tuple, Union
 
 __all__ = [
-    "ChitosanaseCleanerConfig",
-    "create_chitosanase_cleaner",
-    "clean_chitosanase_dataset",
+    "ChitosanasedTmCleanerConfig",
+    "create_chitosanase_dtm_cleaner",
+    "clean_chitosanase_dtm_dataset",
 ]
 
 
@@ -40,8 +41,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ChitosanaseCleanerConfig(BaseCleanerConfig):
-    """Configuration for the Chitosanase cleaning pipeline.
+class ChitosanasedTmCleanerConfig(BaseCleanerConfig):
+    """Configuration for the Chitosanase_dTm cleaning pipeline.
 
     Holds dataset-specific defaults for the Chitosanase pipeline. The
     pipeline expects each raw input file to contain a CSV block followed by
@@ -62,7 +63,7 @@ class ChitosanaseCleanerConfig(BaseCleanerConfig):
     """
 
     infer_mut_workers: int = 16
-    pipeline_name: str = "Chitosanase"
+    pipeline_name: str = "Chitosanase_dTm"
     wt_separator: str = '">wt'
     column_mapping: dict[str, str] = field(
         default_factory=lambda: {
@@ -81,20 +82,20 @@ class ChitosanaseCleanerConfig(BaseCleanerConfig):
         super().validate()
 
 
-def create_chitosanase_cleaner(
+def create_chitosanase_dtm_cleaner(
     dataset_or_path: Optional[Union[str, Path]] = None,
-    config: Optional[Union[ChitosanaseCleanerConfig, Dict[str, Any], str, Path]] = None,
+    config: Optional[Union[ChitosanasedTmCleanerConfig, Dict[str, Any], str, Path]] = None,
 ) -> Pipeline:
-    """Create a configured Pipeline for cleaning Chitosanase raw files.
+    """Create a configured Pipeline for cleaning Chitosanase_dTm raw files.
 
     Parameters
     ----------
     dataset_or_path : Optional[Union[str, Path]]
-        Path to a raw Chitosanase input file (or a DataFrame for programmatic
+        Path to a raw Chitosanase_dTm input file (or a DataFrame for programmatic
         callers). Raw files must contain a CSV block followed by the WT
         sequence separated by the configured ``wt_separator``.
     config : Optional[Union[ChitosanaseCleanerConfig, Dict[str, Any], str, Path]]
-        Pipeline configuration. Accepts a `ChitosanaseCleanerConfig` instance,
+        Pipeline configuration. Accepts a `ChitosanasedTmCleanerConfig` instance,
         a dict of overrides merged with defaults, or a path to a JSON
         configuration file.
 
@@ -106,23 +107,23 @@ def create_chitosanase_cleaner(
 
     Examples
     --------
-    >>> pipeline = create_chitosanase_cleaner("/path/to/Chitosanase_Dataset.csv")
+    >>> pipeline = create_chitosanase_cleaner("/path/to/Chitosanase_dTm_Dataset.csv")
     >>> pipeline.execute()
     """
     # Handle config
     if config is None:
-        final_config = ChitosanaseCleanerConfig()
-    elif isinstance(config, ChitosanaseCleanerConfig):
+        final_config = ChitosanasedTmCleanerConfig()
+    elif isinstance(config, ChitosanasedTmCleanerConfig):
         final_config = config
     elif isinstance(config, dict):
-        final_config = ChitosanaseCleanerConfig().merge(config)
+        final_config = ChitosanasedTmCleanerConfig().merge(config)
     elif isinstance(config, (str, Path)):
-        final_config = ChitosanaseCleanerConfig.from_json(config)
+        final_config = ChitosanasedTmCleanerConfig.from_json(config)
     else:
         raise TypeError(f"config has invalid type: {type(config)}")
 
     if dataset_or_path is None:
-        raise TypeError("dataset_or_path must be a Chitosanase file path")
+        raise TypeError("dataset_or_path must be a Chitosanase_dTm file path")
 
     try:
         pipeline = create_pipeline(dataset_or_path, final_config.pipeline_name)
@@ -176,14 +177,14 @@ def create_chitosanase_cleaner(
         )
         return pipeline
     except Exception as e:
-        logger.error(f"Error in creating Chitosanase cleaning pipeline: {str(e)}")
-        raise RuntimeError(f"Error in creating Chitosanase cleaning pipeline: {str(e)}")
+        logger.error(f"Error in creating Chitosanase_dTm cleaning pipeline: {str(e)}")
+        raise RuntimeError(f"Error in creating Chitosanase_dTm cleaning pipeline: {str(e)}")
 
 
-def clean_chitosanase_dataset(
+def clean_chitosanase_dtm_dataset(
     pipeline: Pipeline,
 ) -> Tuple[Pipeline, MutationDataset]:
-    """Run the Chitosanase pipeline and return the formatted dataset.
+    """Run the Chitosanase_dtm pipeline and return the formatted dataset.
 
     Executes the provided :class:`Pipeline`, converts the pipeline output
     into a :class:`MutationDataset`, and returns both the executed pipeline
@@ -204,8 +205,8 @@ def clean_chitosanase_dataset(
 
     Examples
     --------
-    >>> pipeline = create_chitosanase_cleaner("/path/to/file.csv")
-    >>> pipeline, dataset = clean_chitosanase_dataset(pipeline)
+    >>> pipeline = create_chitosanase_dtm_cleaner("/path/to/file.csv")
+    >>> pipeline, dataset = clean_chitosanase_dtm_dataset(pipeline)
     """
     try:
         pipeline.execute()
@@ -213,8 +214,9 @@ def clean_chitosanase_dataset(
         formatted_df, ref_dict = pipeline.data
         chitosanase_dataset = MutationDataset.from_dataframe(formatted_df, reference_sequences=ref_dict)
 
-        logger.info(f"Successfully cleaned Chitosanase dataset: " f"{len(formatted_df)} mutations from {len(ref_dict)} proteins")
+        logger.info(f"Successfully cleaned Chitosanase_dtm dataset: "
+                    f"{len(formatted_df)} mutations from {len(ref_dict)} proteins")
         return pipeline, chitosanase_dataset
     except Exception as e:
-        logger.error(f"Error in running Chitosanase cleaning pipeline: {str(e)}")
-        raise RuntimeError(f"Error in running Chitosanase cleaning pipeline: {str(e)}")
+        logger.error(f"Error in running Chitosanase_dtm cleaning pipeline: {str(e)}")
+        raise RuntimeError(f"Error in running Chitosanase_dtm cleaning pipeline: {str(e)}")

@@ -56,10 +56,16 @@ from .rbd_antibody_cleaner import (
     create_rbd_antibody_cleaner,
 )
 
-from .chitosanase_cleaner import (
-    ChitosanaseCleanerConfig,
-    create_chitosanase_cleaner,
-    clean_chitosanase_dataset,
+from .chitosanase_dtm_cleaner import (
+    ChitosanasedTmCleanerConfig,
+    create_chitosanase_dtm_cleaner,
+    clean_chitosanase_dtm_dataset,
+)
+
+from .mgnify_ddg_cleaner import (
+    MGnifyddGCleanerConfig,
+    create_mgnify_ddg_cleaner,
+    clean_mgnify_ddg_dataset,
 )
 
 __all__ = [
@@ -93,10 +99,13 @@ __all__ = [
     "RBDACE2CleanerConfig",
     "create_rbd_ace2_cleaner",
     "clean_rbd_ace2_dataset",
-    "ChitosanaseCleanerConfig",
-    "create_chitosanase_cleaner",
-    "clean_chitosanase_dataset",
+    "ChitosanasedTmCleanerConfig",
+    "create_chitosanase_dtm_cleaner",
+    "clean_chitosanase_dtm_dataset",
     "RBDAntibodyCleanerConfig",
     "create_rbd_antibody_cleaner",
     "clean_rbd_antibody_dataset",
+    "MGnifyddGCleanerConfig",
+    "create_mgnify_ddg_cleaner",
+    "clean_mgnify_ddg_dataset",
 ]

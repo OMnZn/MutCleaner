@@ -126,12 +126,12 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
     <tr>
       <td>ddG Dataset</td>
       <td><a href="https://doi.org/10.1038/s43588-024-00716-2">Improving the prediction of protein stability changes upon mutations by geometric learning and a pre-training strategy</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/M1261.csv">M1261.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S461.csv">S461.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S669.csv">S669.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S783.csv">S783.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94%CE%94G_Dataset/S8754.csv">S8754.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/resolve/main/ddG_Dataset/M1261.csv">M1261.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ddG_Dataset/S461.csv">S461.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ddG_Dataset/S669.csv">S669.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ddG_Dataset/S783.csv">S783.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ddG_Dataset/S8754.csv">S8754.csv</a></td>
     </tr>
     <tr>
       <td>dTm Dataset</td>
       <td><a href="https://doi.org/10.1038/s43588-024-00716-2">Improving the prediction of protein stability changes upon mutations by geometric learning and a pre-training strategy</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94Tm_Dataset/S4346.csv">S4346.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/%CE%94Tm_Dataset/S571.csv">S571.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/dTm_Dataset/S4346.csv">S4346.csv</a>, <a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/dTm_Dataset/S557.csv">S557.csv</a></td>
     </tr>
     <tr>
       <td>ArchStabMS1E10 Epistasis Dataset</td>
@@ -188,10 +188,14 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
       <td><a href="https://doi.org/10.1038/s41586-021-03807-6">SARS-CoV-2 RBD antibodies that maximize breadth and resistance to escape</a></td>
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs.csv">SARS-CoV-2-RBD_MAP_Vir_mAbs.csv</a></td>
     </tr>
-    <tr>
-      <td>Chitosanase Dataset</td>
+      <td>Chitosanase dTm Dataset</td>
       <td>None</td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/Chitosanase_Dataset/Chitosanase_Dataset.csv">Chitosanase_Dataset.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/Chitosanase_dTm_Dataset/Chitosanase_dTm_Dataset.csv">Chitosanase_dTm_Dataset.csv</a></td>
+    </tr>
+    <tr>
+      <td>MGnify ddG Dataset</td>
+      <td><a href="https://doi.org/10.64898/2026.05.19.726285">Accurate protein stability prediction for small domains using mega-scale experiments</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/MGnify_ddG_Dataset/MGnify_ddG_Dataset.csv">MGnify_ddG_Dataset.csv</a></td>
     </tr>
   </tbody>
 </table>

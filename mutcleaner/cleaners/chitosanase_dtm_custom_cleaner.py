@@ -1,3 +1,4 @@
+# cleaners/chitosanase_dtm_custom_cleaner.py
 from __future__ import annotations
 
 import io
@@ -49,7 +50,7 @@ def parse_chitosanase_raw_file(file_path: str | Path, wt_separator: str = '">wt'
     Examples
     --------
     >>> from pathlib import Path
-    >>> df = parse_chitosanase_raw_file(Path("/path/to/Chitosanase_Dataset.csv"))
+    >>> df = parse_chitosanase_dtm_raw_file(Path("/path/to/Chitosanase_dTm_Dataset.csv"))
     >>> sorted(df.columns)
     ['Tm', 'aa_mut', 'wt_seq']
     """

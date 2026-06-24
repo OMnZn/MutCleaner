@@ -112,12 +112,12 @@ DATASETS = {
                 ],
                 "file_name": ["S4346.csv"],
             },
-            "S571": {
-                "files": ["S571.csv"],
+            "S557": {
+                "files": ["S557.csv"],
                 "huggingface_repos": [
-                    "datasets/xulab-research/MutCleaner/resolve/main/dTm_Dataset/S571.csv?download=true"
+                    "datasets/xulab-research/MutCleaner/resolve/main/dTm_Dataset/S557.csv?download=true"
                 ],
-                "file_name": ["S571.csv"],
+                "file_name": ["S557.csv"],
             },
         },
     },
@@ -293,14 +293,23 @@ DATASETS = {
             },
         },
     },
-    "Chitosanase Dataset": {
-        "paper_title": "Chitosanase_dataset",
+    "Chitosanase dTm Dataset": {
+        "paper_title": "Chitosanase_dTm_dataset",
         "official_doi": None,
-        "files": ["Chitosanase_Dataset.csv"],
+        "files": ["Chitosanase_dTm_Dataset.csv"],
         "huggingface_repos": [
-            "datasets/xulab-research/MutCleaner/resolve/main/Chitosanase_Dataset/Chitosanase_Dataset.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/Chitosanase_dTm_Dataset/Chitosanase_dTm_Dataset.csv?download=true",
         ],
-        "file_name": ["Chitosanase_Dataset.csv"],
+        "file_name": ["Chitosanase_dTm_Dataset.csv"],
+    },
+    "MGnify ddG Dataset": {
+        "paper_title": "MGnify_ddG_dataset",
+        "official_doi": None,
+        "files": ["MGnify_ddG_Dataset.csv"],
+        "huggingface_repos": [
+            "datasets/xulab-research/MutCleaner/resolve/main/MGnify_ddG_Dataset/MGnify_ddG_Dataset.csv?download=true",
+        ],
+        "file_name": ["MGnify_ddG_Dataset.csv"],
     },
 }
 
@@ -329,7 +338,8 @@ def list_datasets_with_built_in_cleaners() -> None:
     - CTXM Epistasis Dataset
     - RBD Antibody Dataset
     - RBD ACE2 Dataset
-    - Chitosanase Dataset
+    - Chitosanase dTm Dataset
+    - MGnify ddG Dataset
     """
     print("Public datasets with ready-to-use cleaning pipelines:")
     for key, info in DATASETS.items():
