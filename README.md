@@ -1,6 +1,6 @@
 # MutCleaner
 
-[![License badge](https://img.shields.io/badge/License-BSD_3--Clause-yellow?logo=opensourceinitiative&logoColor=white)](https://github.com/xulab-research/MutCleaner/blob/main/LICENSE)
+[![License badge](https://img.shields.io/badge/License-Apache_2.0-blue?logo=apache&logoColor=white)](https://github.com/xulab-research/MutCleaner/blob/main/LICENSE)
 [![PyPI version badge](https://img.shields.io/pypi/v/mutcleaner.svg?logo=python&logoColor=white&color=orange)](https://pypi.org/project/mutcleaner/)
 [![Docs](https://github.com/xulab-research/MutCleaner/actions/workflows/docs.yml/badge.svg)](https://xulab-research.github.io/MutCleaner/)
 
@@ -243,7 +243,17 @@ If you use MutCleaner in your research, please cite:
 
 ## License
 
-This project is licensed under the BSD 3-Clause License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0.
+
+Unless otherwise stated, the source code, model architecture, training scripts,
+inference scripts, and released model weights/checkpoints are licensed under
+Apache-2.0.
+
+Datasets used in this project may be subject to their original licenses and
+terms of use. Please refer to the corresponding dataset sources for details.
+
+This software is provided for research purposes and is not intended for clinical
+diagnosis, medical decision-making, or direct therapeutic use.
 
 ## Support
 
