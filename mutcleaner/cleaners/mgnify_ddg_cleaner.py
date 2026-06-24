@@ -121,14 +121,14 @@ def create_mgnify_ddg_cleaner(
     """
     Create MGnify protein stability dataset cleaning pipeline.
 
-    This function pieces together modular basic cleaners to standardize the MGnify
+    This function pieces together modular basic cleaners to standardize the MGnify 
     subsets into regularized training matrices for deep learning architectures.
 
     Parameters
     ----------
     dataset_or_path : Optional[Union[pd.DataFrame, str, Path]], default=None
-        Raw dataset DataFrame or file path to the raw MGnify .csv file.
-    config : Optional[Union[MGnifyCleanerConfig, Dict[str, Any], str, Path]]
+        Raw dataset DataFrame or file path to the raw MGnify_ddG_Dataset.csv file.
+    config : Optional[Union[MGnifyddGCleanerConfig, Dict[str, Any], str, Path]]
         Configuration instance, parameter dictionary, or path to a JSON config.
 
     Returns
@@ -148,7 +148,7 @@ def create_mgnify_ddg_cleaner(
     else:
         raise TypeError(f"config must be MGnifyddGCleanerConfig, dict, str, Path or None, " f"got {type(config)}")
 
-    logger.info(f"MGnify dataset will be cleaned with pipeline: {final_config.pipeline_name}")
+    logger.info(f"MGnify_ddG dataset will be cleaned with pipeline: {final_config.pipeline_name}")
     logger.debug(f"Configuration summary:\n{final_config.get_summary()}")
 
     try:
@@ -192,8 +192,8 @@ def create_mgnify_ddg_cleaner(
         return pipeline
 
     except Exception as e:
-        logger.error(f"Failed to initialize MGnify cleaning pipeline: {str(e)}")
-        raise RuntimeError(f"Failed to initialize MGnify cleaning pipeline: {str(e)}")
+        logger.error(f"Failed to initialize MGnify-ddG cleaning pipeline: {str(e)}")
+        raise RuntimeError(f"Failed to initialize MGnify-ddG cleaning pipeline: {str(e)}")
 
 
 def clean_mgnify_ddg_dataset(
@@ -211,7 +211,7 @@ def clean_mgnify_ddg_dataset(
     -------
     Tuple[Pipeline, MutationDataset]
         - pipeline: The executed pipeline instance.
-        - mgnify_dataset: Standardized MutationDataset object containing data.csv,
+        - mgnify_ddg_dataset: Standardized MutationDataset object containing data.csv,
           wt.fasta, and metadata.json.
     """
     try:
@@ -220,10 +220,10 @@ def clean_mgnify_ddg_dataset(
 
         mgnify_dataset = MutationDataset.from_dataframe(formatted_df, reference_sequences=ref_dict)
 
-        logger.info(f"Successfully executed MGnify ddG pipeline: " f"Cleaned {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
+        logger.info(f"Successfully executed MGnify-ddG pipeline: " f"Cleaned {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
 
         return pipeline, mgnify_dataset
 
     except Exception as e:
-        logger.error(f"Error encountered during MGnify ddG pipeline execution: {str(e)}")
-        raise RuntimeError(f"Error encountered during MGnify ddG pipeline execution: {str(e)}")
+        logger.error(f"Error encountered during MGnify-ddG pipeline execution: {str(e)}")
+        raise RuntimeError(f"Error encountered during MGnify-ddG pipeline execution: {str(e)}")
