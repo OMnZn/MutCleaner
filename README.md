@@ -2,7 +2,7 @@
 
 [![License badge](https://img.shields.io/badge/License-Apache_2.0-blue?logo=apache&logoColor=white)](https://github.com/xulab-research/MutCleaner/blob/main/LICENSE)
 [![PyPI version badge](https://img.shields.io/pypi/v/mutcleaner.svg?logo=python&logoColor=white&color=orange)](https://pypi.org/project/mutcleaner/)
-[![Python version badge]([https://img.shields.io/pypi/pyversions/mutcleaner.svg?logo=python&logoColor=white&color=orange](https://img.shields.io/python/required-version-toml.svg?logo=python&logoColor=white&color=orange&tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fxulab-research%2FMutCleaner%2Frefs%2Fheads%2Fmain%2Fpyproject.toml))](https://pypi.org/project/mutcleaner/)
+[![Python version badge](https://img.shields.io/python/required-version-toml.svg?logo=python&logoColor=white&color=orange&tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Fxulab-research%2FMutCleaner%2Frefs%2Fheads%2Fmain%2Fpyproject.toml)](https://pypi.org/project/mutcleaner/)
 [![Hugging Face](https://img.shields.io/badge/HuggingFace-datasets-yellow)](https://huggingface.co/datasets/xulab-research/MutCleaner)
 [![Docs](https://github.com/xulab-research/MutCleaner/actions/workflows/docs.yml/badge.svg)](https://xulab-research.github.io/MutCleaner/)
 
