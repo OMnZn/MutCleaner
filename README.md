@@ -200,7 +200,6 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
   </tbody>
 </table>
 
-The current curated RBD antibody source bundle tracked in this project is the deduplicated three-table subset: `Moderna`, `Rockefeller`, and `Vir_mAbs`.
 
 
 ## Core Features
