@@ -220,7 +220,7 @@ def clean_mgnify_ddg_dataset(
 
         mgnify_dataset = MutationDataset.from_dataframe(formatted_df, reference_sequences=ref_dict)
 
-        logger.info(f"Successfully executed MGnify-ddG pipeline: " f"Cleaned {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
+        logger.info(f"Successfully executed MGnify-ddG pipeline: Cleaned {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
 
         return pipeline, mgnify_dataset
 
