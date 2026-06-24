@@ -899,7 +899,6 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
     main()
 
-
 ```
 
 ### Advanced Settings
@@ -950,8 +949,6 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     main()
-
-
 
 ```
 
