@@ -329,8 +329,7 @@ def clean_antitoxin_pard3_dataset(
         )
 
         logger.info(
-            f"Successfully cleaned antitoxin dataset: "
-            f"{len(antitoxin_dataset_df)} mutations from {len(antitoxin_ref_seq)} proteins"
+            f"Successfully cleaned antitoxin dataset: {len(antitoxin_dataset_df)} mutations from {len(antitoxin_ref_seq)} proteins"
         )
 
         return pipeline, antitoxin_dataset
