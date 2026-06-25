@@ -191,7 +191,7 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/RBD_Antibody_Dataset/SARS-CoV-2-RBD_MAP_Vir_mAbs.csv">SARS-CoV-2-RBD_MAP_Vir_mAbs.csv</a></td>
     </tr>
       <td>Chitosanase dTm Dataset</td>
-      <td>None</td>
+      <td>In-house wet-lab data, no reference available yet</td>
       <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/Chitosanase_dTm_Dataset/Chitosanase_dTm_Dataset.csv">Chitosanase_dTm_Dataset.csv</a></td>
     </tr>
     <tr>
