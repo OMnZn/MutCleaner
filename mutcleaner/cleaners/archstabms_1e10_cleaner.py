@@ -272,8 +272,7 @@ def clean_archstabms_1e10_dataset(
         )
 
         logger.info(
-            f"Successfully cleaned archstabms1e10 dataset: "
-            f"{len(archstabms_1e10_dataset_df)} mutations from {len(archstabms_1e10_ref_seq)} proteins"
+            f"Successfully cleaned archstabms1e10 dataset: {len(archstabms_1e10_dataset_df)} mutations from {len(archstabms_1e10_ref_seq)} proteins"
         )
 
         return pipeline, archstabms_1e10_dataset
