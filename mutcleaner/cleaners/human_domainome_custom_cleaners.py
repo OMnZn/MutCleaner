@@ -316,8 +316,7 @@ def add_sequences_to_dataset(
     successful_proteins = successful_dataset[name_column].nunique()
 
     tqdm.write(
-        f"Sequence addition: {len(successful_dataset)} successful, {len(failed_dataset)} failed "
-        f"({successful_proteins}/{total_proteins} proteins)"
+        f"Sequence addition: {len(successful_dataset)} successful, {len(failed_dataset)} failed ({successful_proteins}/{total_proteins} proteins)"
     )
 
     return successful_dataset, failed_dataset
