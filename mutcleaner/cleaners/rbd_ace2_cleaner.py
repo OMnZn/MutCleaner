@@ -174,8 +174,7 @@ class RBDACE2CleanerConfig(BaseCleanerConfig):
         if missing_standard_columns:
             raise ValueError(
                 "column_mapping must provide standardized columns "
-                f"{sorted(required_standard_columns)}, missing "
-                f"{sorted(missing_standard_columns)}"
+                f"{sorted(required_standard_columns)}, missing {sorted(missing_standard_columns)}"
             )
 
         for target_name, sequence in self.reference_sequences.items():
@@ -222,8 +221,7 @@ def create_rbd_ace2_cleaner(
         final_config = RBDACE2CleanerConfig.from_json(config)
     else:
         raise TypeError(
-            "config must be RBDACE2CleanerConfig, dict, str, Path or None, "
-            f"got {type(config)}"
+            f"config must be RBDACE2CleanerConfig, dict, str, Path or None, got {type(config)}"
         )
 
     target_name_column = final_config.column_mapping.get("target", "target")
