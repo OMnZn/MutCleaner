@@ -135,8 +135,7 @@ class CTXMCleanerConfig(BaseCleanerConfig):
 
         if self.primary_label_column not in self.label_columns:
             raise ValueError(
-                f"primary_label_column '{self.primary_label_column}' "
-                f"must be in label_columns {self.label_columns}"
+                f"primary_label_column '{self.primary_label_column}' must be in label_columns {self.label_columns}"
             )
 
         # Validate column mapping
@@ -189,8 +188,7 @@ def create_ctxm_cleaner(
         final_config = CTXMCleanerConfig.from_json(config)
     else:
         raise TypeError(
-            f"config must be CTXMCleanerConfig, dict, str, Path or None, "
-            f"got {type(config)}"
+            f"config must be CTXMCleanerConfig, dict, str, Path or None, got {type(config)}"
         )
 
     # Log configuration summary
@@ -310,8 +308,7 @@ def clean_ctxm_dataset(
         CTXM_dataset = MutationDataset.from_dataframe(CTXM_dataset_df, CTXM_ref_seq)
 
         logger.info(
-            f"Successfully cleaned CTXM dataset: "
-            f"{len(CTXM_dataset_df)} mutations from {len(CTXM_ref_seq)} proteins"
+            f"Successfully cleaned CTXM dataset: {len(CTXM_dataset_df)} mutations from {len(CTXM_ref_seq)} proteins"
         )
 
         return pipeline, CTXM_dataset

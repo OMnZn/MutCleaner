@@ -2100,8 +2100,7 @@ def replace_in_column(
     if name_column not in df.columns:
         cols_preview = ", ".join(map(str, df.columns[:20]))
         raise KeyError(
-            f"Column {name_column!r} not found."
-            f"Available columns (first 20): {cols_preview}"
+            f"Column {name_column!r} not found.Available columns (first 20): {cols_preview}"
         )
 
     if not isinstance(old, str):

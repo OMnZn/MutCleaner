@@ -120,8 +120,7 @@ class ProteinGymCleanerConfig(BaseCleanerConfig):
         valid_strategies = ["error", "first", "separate"]
         if self.handle_multiple_wt not in valid_strategies:
             raise ValueError(
-                f"handle_multiple_wt must be one of {valid_strategies}, "
-                f"got {self.handle_multiple_wt}"
+                f"handle_multiple_wt must be one of {valid_strategies}, got {self.handle_multiple_wt}"
             )
 
         # Validate score columns
@@ -130,8 +129,7 @@ class ProteinGymCleanerConfig(BaseCleanerConfig):
 
         if self.primary_label_column not in self.label_columns:
             raise ValueError(
-                f"primary_label_column '{self.primary_label_column}' "
-                f"must be in label_columns {self.label_columns}"
+                f"primary_label_column '{self.primary_label_column}' must be in label_columns {self.label_columns}"
             )
 
         # Validate column mapping
@@ -204,8 +202,7 @@ def create_proteingym_dms_substitutions_cleaner(
     # ProteinGym only supports directory or zip file input
     if not (path_obj.is_dir() or path_obj.suffix.lower() == ".zip"):
         raise TypeError(
-            f"ProteinGym cleaner only supports directory or zip file input, "
-            f"got: {data_path}"
+            f"ProteinGym cleaner only supports directory or zip file input, got: {data_path}"
         )
 
     # Handle configuration parameter
@@ -222,8 +219,7 @@ def create_proteingym_dms_substitutions_cleaner(
         final_config = ProteinGymCleanerConfig.from_json(config)
     else:
         raise TypeError(
-            f"config must be ProteinGymCleanerConfig, dict, str, Path or None, "
-            f"got {type(config)}"
+            f"config must be ProteinGymCleanerConfig, dict, str, Path or None, got {type(config)}"
         )
 
     # Log configuration summary
@@ -318,8 +314,7 @@ def clean_proteingym_dms_substitutions_dataset(pipeline: Pipeline) -> Tuple[Pipe
         )
 
         logger.info(
-            f"Successfully cleaned ProteinGym dataset: "
-            f"{len(proteingym_dms_substitutions_dataset_df)} mutations from {len(proteingym_dms_substitutions_ref_seq)} proteins"
+            f"Successfully cleaned ProteinGym dataset: {len(proteingym_dms_substitutions_dataset_df)} mutations from {len(proteingym_dms_substitutions_ref_seq)} proteins"
         )
 
         return pipeline, proteingym_dms_substitutions_dataset

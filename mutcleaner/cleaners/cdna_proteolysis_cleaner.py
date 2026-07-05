@@ -127,8 +127,7 @@ class CDNAProteolysisCleanerConfig(BaseCleanerConfig):
 
         if self.primary_label_column not in self.label_columns:
             raise ValueError(
-                f"primary_label_column '{self.primary_label_column}' "
-                f"must be in label_columns {self.label_columns}"
+                f"primary_label_column '{self.primary_label_column}' must be in label_columns {self.label_columns}"
             )
 
         # Validate column mapping
@@ -183,8 +182,7 @@ def create_cdna_proteolysis_cleaner(
         final_config = CDNAProteolysisCleanerConfig.from_json(config)
     else:
         raise TypeError(
-            f"config must be CDNAProteolysisCleanerConfig, dict, str, Path or None, "
-            f"got {type(config)}"
+            f"config must be CDNAProteolysisCleanerConfig, dict, str, Path or None, got {type(config)}"
         )
 
     # Log configuration summary
@@ -260,8 +258,7 @@ def create_cdna_proteolysis_cleaner(
             pipeline.add_delayed_step(read_dataset, 0)
         elif not isinstance(dataset_or_path, pd.DataFrame):
             raise TypeError(
-                f"dataset_or_path must be pd.DataFrame or str/Path, "
-                f"got {type(dataset_or_path)}"
+                f"dataset_or_path must be pd.DataFrame or str/Path, got {type(dataset_or_path)}"
             )
 
         return pipeline
@@ -317,8 +314,7 @@ def clean_cdna_proteolysis_dataset(
         )
 
         logger.info(
-            f"Successfully cleaned cDNAProteolysis dataset: "
-            f"{len(cdna_proteolysis_dataset_df)} mutations from {len(cdna_proteolysis_ref_seq)} proteins"
+            f"Successfully cleaned cDNAProteolysis dataset:{len(cdna_proteolysis_dataset_df)} mutations from {len(cdna_proteolysis_ref_seq)} proteins"
         )
 
         return pipeline, cdna_proteolysis_dataset

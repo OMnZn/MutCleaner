@@ -123,8 +123,7 @@ class DdgDtmCleanerConfig(BaseCleanerConfig):
 
         if self.primary_label_column not in self.label_columns:
             raise ValueError(
-                f"primary_label_column '{self.primary_label_column}' "
-                f"must be in label_columns {self.label_columns}"
+                f"primary_label_column '{self.primary_label_column}' must be in label_columns {self.label_columns}"
             )
 
         # Validate column mapping
@@ -185,8 +184,7 @@ def create_ddg_dtm_cleaner(
         final_config = DdgDtmCleanerConfig.from_json(config)
     else:
         raise TypeError(
-            f"config must be DdgDtmCleanerConfig, dict, str, Path or None, "
-            f"got {type(config)}"
+            f"config must be DdgDtmCleanerConfig, dict, str, Path or None, got {type(config)}"
         )
 
     # Log configuration summary
@@ -218,8 +216,7 @@ def create_ddg_dtm_cleaner(
             label_col = _detect_label_columns(dataset_or_path)
         else:
             raise TypeError(
-                f"dataset_or_path must be pd.DataFrame or str/Path, "
-                f"got {type(dataset_or_path)}"
+                f"dataset_or_path must be pd.DataFrame or str/Path, got {type(dataset_or_path)}"
             )
         final_config.column_mapping.update({label_col: "label"})
         if label_col == "ddG":
@@ -335,8 +332,7 @@ def clean_ddg_dtm_dataset(
         )
 
         logger.info(
-            f"Successfully cleaned ddG-dTm dataset: "
-            f"{len(ddg_dtm_dataset_df)} mutations from {len(ddg_dtm_ref_seq)} proteins"
+            f"Successfully cleaned ddG-dTm dataset: {len(ddg_dtm_dataset_df)} mutations from {len(ddg_dtm_ref_seq)} proteins"
         )
 
         return pipeline, ddg_dtm_dataset

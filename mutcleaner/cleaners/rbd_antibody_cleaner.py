@@ -160,8 +160,7 @@ class RBDAntibodyCleanerConfig(BaseCleanerConfig):
             raise ValueError("label_columns cannot be empty")
         if self.primary_label_column not in self.label_columns:
             raise ValueError(
-                f"primary_label_column '{self.primary_label_column}' "
-                f"must be in label_columns {self.label_columns}"
+                f"primary_label_column '{self.primary_label_column}' must be in label_columns {self.label_columns}"
             )
 
         required_standard_columns = {
@@ -177,8 +176,7 @@ class RBDAntibodyCleanerConfig(BaseCleanerConfig):
         if missing_standard_columns:
             raise ValueError(
                 "column_mapping must provide standardized columns "
-                f"{sorted(required_standard_columns)}, missing "
-                f"{sorted(missing_standard_columns)}"
+                f"{sorted(required_standard_columns)}, missing {sorted(missing_standard_columns)}"
             )
 
         for target_name, sequence in self.reference_sequences.items():
@@ -213,8 +211,7 @@ def create_rbd_antibody_cleaner(
         final_config = RBDAntibodyCleanerConfig.from_json(config)
     else:
         raise TypeError(
-            "config must be RBDAntibodyCleanerConfig, dict, str, Path or None, "
-            f"got {type(config)}"
+            f"config must be RBDAntibodyCleanerConfig, dict, str, Path or None, got {type(config)}"
         )
 
     antibody_name_column = final_config.column_mapping.get("name", "name")
@@ -324,8 +321,7 @@ def create_rbd_antibody_cleaner(
         pipeline.add_delayed_step(read_dataset, 0, file_format="csv")
     elif dataset_or_path is not None and not isinstance(dataset_or_path, pd.DataFrame):
         raise TypeError(
-            "dataset_or_path must be pd.DataFrame, str, Path, or None, "
-            f"got {type(dataset_or_path)}"
+            f"dataset_or_path must be pd.DataFrame, str, Path, or None, got {type(dataset_or_path)}"
         )
 
     return pipeline

@@ -146,7 +146,7 @@ def create_mgnify_ddg_cleaner(
     elif isinstance(config, (str, Path)):
         final_config = MGnifyddGCleanerConfig.from_json(config)
     else:
-        raise TypeError(f"config must be MGnifyddGCleanerConfig, dict, str, Path or None, " f"got {type(config)}")
+        raise TypeError(f"config must be MGnifyddGCleanerConfig, dict, str, Path or None, got {type(config)}")
 
     logger.info(f"MGnify_ddG dataset will be cleaned with pipeline: {final_config.pipeline_name}")
     logger.debug(f"Configuration summary:\n{final_config.get_summary()}")
@@ -220,8 +220,7 @@ def clean_mgnify_ddg_dataset(
 
         mgnify_dataset = MutationDataset.from_dataframe(formatted_df, reference_sequences=ref_dict)
 
-        logger.info(f"Successfully executed MGnify-ddG pipeline:"
-                    f"{len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
+        logger.info(f"Successfully executed MGnify-ddG pipeline: {len(formatted_df)} mutations across {len(ref_dict)} unique proteins.")
 
         return pipeline, mgnify_dataset
 

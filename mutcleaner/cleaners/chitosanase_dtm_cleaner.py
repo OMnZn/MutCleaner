@@ -214,8 +214,7 @@ def clean_chitosanase_dtm_dataset(
         formatted_df, ref_dict = pipeline.data
         chitosanase_dataset = MutationDataset.from_dataframe(formatted_df, reference_sequences=ref_dict)
 
-        logger.info(f"Successfully cleaned Chitosanase_dtm dataset: "
-                    f"{len(formatted_df)} mutations from {len(ref_dict)} proteins")
+        logger.info(f"Successfully cleaned Chitosanase_dtm dataset: {len(formatted_df)} mutations from {len(ref_dict)} proteins")
         return pipeline, chitosanase_dataset
     except Exception as e:
         logger.error(f"Error in running Chitosanase_dtm cleaning pipeline: {str(e)}")
