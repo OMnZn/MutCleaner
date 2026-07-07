@@ -8,10 +8,10 @@ dynamic = ["version"]
 description = "An efficient framework for cleaning, standardizing, and processing biological mutation data."
 readme = "README.md"
 authors = [
-    { name = "Yuxiang Tang" },
     { name = "Ziyu Shi" },
+    { name = "Yuxiang Tang" },
 ]
-license = "BSD-3-Clause"
+license = "Apache-2.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.13"
 dependencies = [
