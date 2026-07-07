@@ -229,8 +229,6 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
 - **Parallel processing**: Use multi-core processing for mutation validation, mutation application, and sequence-based mutation inference.
 - **Progress tracking**: Monitor long-running cleaning tasks with progress bars and structured execution summaries.
 
-## Examples and Use Cases
-
 
 ## Citation
 
