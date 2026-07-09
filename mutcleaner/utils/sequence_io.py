@@ -269,7 +269,7 @@ def parse_fasta(
                 if cleaned_line:
                     current_seq.append(cleaned_line)
 
-    # Don't forget the last sequence
+    # Save the final parsed sequence.
     if current_id is not None:
         seq = "".join(current_seq)
         sequences[current_id] = {"sequence": seq, "metadata": current_metadata}

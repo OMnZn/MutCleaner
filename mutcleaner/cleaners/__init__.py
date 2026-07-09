@@ -15,6 +15,13 @@ from .human_domainome_sup2_cleaner import (
     clean_human_domainome_sup2_dataset,
     create_human_domainome_sup2_cleaner,
 )
+
+from .human_domainome_sup4_cleaner import (
+    HumanDomainomeSup4CleanerConfig,
+    clean_human_domainome_sup4_dataset,
+    create_human_domainome_sup4_cleaner,
+)
+
 from .ddg_dtm_cleaners import (
     DdgDtmCleanerConfig,
     clean_ddg_dtm_dataset,

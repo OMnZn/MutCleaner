@@ -2,9 +2,9 @@
 
 ## Human Domainome Dataset
 
-### Basic Usage
+### Human Domainome Sup2 Dataset
 The following example shows the complete workflow for downloading, cleaning,
-saving the cleaned Human Domainome dataset, and exporting the
+saving the cleaned Human Domainome sup2 dataset, and exporting the
 cleaning artifacts: 
 ```python
 import pickle
@@ -54,6 +54,56 @@ if __name__ == "__main__":
 ### Advanced Settings
 
 See {py:class}`mutcleaner.cleaners.HumanDomainomeSup2CleanerConfig` for details.
+
+### Human Domainome Sup4 Dataset
+The following example shows the complete workflow for downloading, cleaning,
+saving the cleaned Human Domainome sup4 dataset, and exporting the cleaning artifacts: 
+```python
+import pickle
+from pathlib import Path
+from mutcleaner import download_human_domainome_source_file
+from mutcleaner.cleaners import (
+    create_human_domainome_sup4_cleaner,
+    clean_human_domainome_sup4_dataset,
+)
+
+
+def main():
+    # File settings
+    download_human_domainome_source_file("raw_dataset/Human_Domainome_Dataset", overwrite=True, sub_dataset="Human Domainome Sup4 Dataset")
+    artifact_path = Path("logs/Human_Domainome_Dataset/Human_Domainome_Sup4_Dataset/artifacts.pkl")
+    artifact_csv_dir = Path("logs/Human_Domainome_Dataset/Human_Domainome_Sup4_Dataset")
+
+    artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
+    # Clean data
+    hd_cleaning_pipeline = create_human_domainome_sup4_cleaner(dataset_or_path="raw_dataset/Human_Domainome_Dataset/SupplementaryTable4.txt", sequence_dict_path="raw_dataset/Human_Domainome_Dataset/wild_type.fasta")
+    hd_cleaning_pipeline, hd_dataset = clean_human_domainome_sup4_dataset(
+        hd_cleaning_pipeline
+    )
+
+    # Save data
+    hd_dataset.save("cleaned_dataset/cleaned_Human_Domainome_Dataset/Human_Domainome_Sup4_Dataset")
+    hd_cleaning_pipeline.save_artifacts(artifact_path)
+
+    # open the pickle file and read the object
+    with open(artifact_path, "rb") as file:
+        artifacts = pickle.load(file)
+
+    for artifact_name, artifact_df in artifacts.items():
+        artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
+
+
+if __name__ == "__main__":
+    import multiprocessing
+
+    multiprocessing.freeze_support()
+    main()
+```
+
+### Advanced Settings
+
+See {py:class}`mutcleaner.cleaners.HumanDomainomeSup4CleanerConfig` for details.
 
 ## ProteinGym DMS Substitutions Dataset
 
@@ -587,10 +637,10 @@ from mutcleaner.cleaners import (
 
 def main():
     # Prepare data
-    download_ctxm_source_file("raw_dataset/CTXM_Epistasis_Dataset", overwrite=True)
+    download_ctxm_source_file("raw_dataset/CTXM_Epistasis_Dataset", overwrite=True, sub_dataset="CTXM_Ampicillin_Epistasis_Dataset")
 
     # File settings
-    dataset_filepath = Path("raw_dataset/CTXM_Epistasis_Dataset/CTXM_Ampicillin_Epistasis_Dataset.csv")
+    dataset_filepath = Path("raw_dataset/CTXM_Epistasis_Dataset/Doubles_A3_processed.txt")
     artifact_path = Path("logs/CTXM_Ampicillin_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/CTXM_Ampicillin_Epistasis_Dataset")
 
@@ -627,6 +677,7 @@ cleaning artifacts:
 ```python
 import pickle
 from pathlib import Path
+from mutcleaner import download_ctxm_source_file
 from mutcleaner.cleaners import (
     CTXMCleanerConfig,
     create_ctxm_cleaner,
@@ -635,12 +686,15 @@ from mutcleaner.cleaners import (
 
 
 def main():
+    # Prepare data
+    download_ctxm_source_file("raw_dataset/CTXM_Epistasis_Dataset", overwrite=True, sub_dataset="CTXM_Cefotaxime_Epistasis_Dataset")
+
     # Set cleaning configs
     ctxm_cleaning_config = CTXMCleanerConfig()
     ctxm_cleaning_config.wt_name = "CTXM_cefotaxime"
 
     # File settings
-    dataset_filepath = Path("raw_dataset/CTXM_Epistasis_Dataset/CTXM_Cefotaxime_Epistasis_Dataset.csv")
+    dataset_filepath = Path("raw_dataset/CTXM_Epistasis_Dataset/Doubles_C2_processed.txt")
     artifact_path = Path("logs/CTXM_Cefotaxime_Epistasis_Dataset/artifacts.pkl")
     artifact_csv_dir = Path("logs/CTXM_Cefotaxime_Epistasis_Dataset")
 
@@ -667,6 +721,7 @@ if __name__ == "__main__":
 
     multiprocessing.freeze_support()
     main()
+
 ```
 
 ### Advanced Settings

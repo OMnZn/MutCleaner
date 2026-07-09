@@ -374,10 +374,40 @@ def download_source_file_from_huggingface(
 
     Examples
     --------
-    >>> download_source_file("cdna_proteolysis", "data", "cDNA_proteolysis.csv")
-    'data/cDNA_proteolysis.csv'
-    >>> download_source_file("cdna_proteolysis", "data")
-    'data/Tsuboyama2023_Dataset2_Dataset3_20230416.csv'
+    Download all files registered for the Human Domainome Dataset:
+
+    >>> paths = download_source_file_from_huggingface(
+    ...     "Human Domainome Dataset",
+    ...     "data",
+    ... )
+    >>> paths["SupplementaryTable2.txt"]
+    'data/SupplementaryTable2.txt'
+    >>> paths["SupplementaryTable4.txt"]
+    'data/SupplementaryTable4.txt'
+    >>> paths["wild_type.fasta"]
+    'data/wild_type.fasta'
+
+    Download files from the Human Domainome Sup2 Dataset:
+
+    >>> paths = download_source_file_from_huggingface(
+    ...     "Human Domainome Dataset",
+    ...     "data",
+    ...     sub_dataset="Human Domainome Sup2 Dataset",
+    ... )
+    >>> paths["SupplementaryTable2.txt"]
+    'data/SupplementaryTable2.txt'
+
+    Download files from the Human Domainome Sup4 Dataset:
+
+    >>> paths = download_source_file_from_huggingface(
+    ...     "Human Domainome Dataset",
+    ...     "data",
+    ...     sub_dataset="Human Domainome Sup4 Dataset",
+    ... )
+    >>> paths["SupplementaryTable4.txt"]
+    'data/SupplementaryTable4.txt'
+    >>> paths["wild_type.fasta"]
+    'data/wild_type.fasta'
     """
     target_dataset = DATASETS.get(dataset_name, {})
     if sub_dataset is not None:
@@ -447,30 +477,42 @@ def download_human_domainome_source_file(
     dir: str,
     *,
     overwrite: bool = False,
+    sub_dataset: Optional[
+        Literal[
+            "Human Domainome Sup2 Dataset",
+            "Human Domainome Sup4 Dataset",
+        ]
+    ] = None,
 ) -> Dict[str, str]:
     """
-    Download the source file for Human Domainome Dataset from the original source.
+    Download source files for the Human Domainome Dataset.
 
     Parameters
     ----------
     dir : str
-        The target directory where the file will be saved.
+        The target directory where the files will be saved.
     overwrite : bool, default=False
-        Whether to overwrite the file if it already exists. Default is False.
+        Whether to overwrite existing files.
+    sub_dataset : Optional[
+        Literal[
+            "Human Domainome Sup2 Dataset",
+            "Human Domainome Sup4 Dataset",
+        ]
+    ], default=None
+        Sub-dataset to download. If None, download all Human Domainome
+        source files.
 
     Returns
     -------
     Dict[str, str]
-        key: file name,
-        value: file path pointing to the Human Domainome Dataset source file
-
+        Mapping from file names to downloaded local file paths.
     """
     return download_source_file_from_huggingface(
-        "Human Domainome Dataset", dir, overwrite=overwrite,
+        "Human Domainome Dataset",
+        dir,
+        overwrite=overwrite,
+        sub_dataset=sub_dataset,
     )
-
-
-from typing import Dict, Literal, Optional
 
 
 def download_ddg_dtm_source_file(

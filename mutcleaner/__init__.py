@@ -3,7 +3,7 @@
 MutCleaner: An efficient framework for cleaning, standardizing, and processing biological mutation data.
 """
 
-__author__ = "Yuxiang Tang and Ziyu Shi"
+__author__ = "Ziyu Shi and Yuxiang Tang"
 
 __version__ = "0.5.0"
 
@@ -30,6 +30,7 @@ from .cleaners import (
     rbd_antibody_cleaner,
     cdna_proteolysis_cleaner,
     human_domainome_sup2_cleaner,
+    human_domainome_sup4_cleaner,
     proteingym_dms_substitutions_cleaner,
     ddg_dtm_cleaners,
     archstabms_1e10_cleaner,
