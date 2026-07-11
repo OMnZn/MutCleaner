@@ -1,6 +1,7 @@
 # mutcleaner/cleaners/basic_cleaners.py
 from __future__ import annotations
 
+import re
 import numpy as np
 import pandas as pd
 from functools import partial
@@ -56,6 +57,7 @@ __all__ = [
     "convert_to_mutation_dataset_format",
     "replace_in_column",
     "subtract_labels_by_wt",
+    "remap_mutation_positions_by_name",
 ]
 
 
@@ -935,7 +937,6 @@ def validate_mutations(
     3  protein1        A122S    1.5
     4  protein1  C455D,E788F    2.3
     """
-    import re
 
     tqdm.write("Validating and formatting mutations...")
 
@@ -2335,3 +2336,172 @@ def subtract_labels_by_wt(
     failed_df = pd.DataFrame(failed_rows) if failed_rows else pd.DataFrame()
     tqdm.write(f"Success: {len(successful_df)}, Failed: {len(failed_df)}")
     return successful_df, failed_df
+
+
+@pipeline_step
+def remap_mutation_positions_by_name(
+    dataset: pd.DataFrame,
+    position_offsets: Optional[Dict[Any, int]] = None,
+    position_maps: Optional[Dict[Any, Dict[int, int]]] = None,
+    name_column: str = "name",
+    mutation_column: str = "mut_info",
+    mutation_separator: str = ",",
+    strict: bool = True,
+) -> pd.DataFrame:
+    """Remap mutation positions using name-specific offsets or position maps.
+
+    Fixed offsets are suitable when source and target numbering systems differ
+    by a constant value. Explicit position maps are suitable when residue
+    correspondence is non-linear because of insertions, deletions, or other
+    numbering differences.
+
+    When both rules are provided for the same name, an explicitly mapped
+    position takes precedence over the fixed offset. Positions absent from the
+    explicit map fall back to the fixed offset when one is available.
+
+    Parameters
+    ----------
+    dataset : pd.DataFrame
+        Input dataset.
+    position_offsets : Optional[Dict[Any, int]], default=None
+        Mapping from protein names to fixed residue-position offsets.
+    position_maps : Optional[Dict[Any, Dict[int, int]]], default=None
+        Mapping from protein names to explicit source-to-target position maps.
+    name_column : str, default="name"
+        Column containing protein or dataset names.
+    mutation_column : str, default="mut_info"
+        Column containing mutation descriptions.
+    mutation_separator : str, default=","
+        Separator between individual mutations.
+    strict : bool, default=True
+        Whether to raise an error for invalid mutation strings or positions
+        missing from an explicit map when no fixed offset is available. If
+        False, unsupported mutation tokens or unmapped positions are left
+        unchanged.
+
+    Returns
+    -------
+    pd.DataFrame
+        Dataset with remapped mutation positions.
+
+    Raises
+    ------
+    ValueError
+        If required columns are missing, neither remapping rule is provided,
+        or mutation positions cannot be remapped when ``strict=True``.
+
+    Examples
+    --------
+    Create an example dataset:
+
+    >>> df = pd.DataFrame({
+    ...     "name": ["proteinA", "proteinB"],
+    ...     "mut_info": ["S10T,F14V", "A5G"],
+    ... })
+
+    Apply a fixed three-residue offset:
+
+    >>> result = remap_mutation_positions_by_name(
+    ...     df,
+    ...     position_offsets={"proteinA": 3},
+    ... )
+    >>> result["mut_info"].tolist()
+    ['S13T,F17V', 'A5G']
+
+    Apply a non-linear explicit position map:
+
+    >>> result = remap_mutation_positions_by_name(
+    ...     df,
+    ...     position_maps={"proteinA": {10: 12, 14: 19}},
+    ... )
+    >>> result["mut_info"].tolist()
+    ['S12T,F19V', 'A5G']
+
+    Combine a fixed offset with an explicit position map:
+
+    >>> result = remap_mutation_positions_by_name(
+    ...     df,
+    ...     position_offsets={"proteinA": 3},
+    ...     position_maps={"proteinA": {14: 20}},
+    ... )
+    >>> result["mut_info"].tolist()
+    ['S13T,F20V', 'A5G']
+    """
+    missing_columns = {name_column, mutation_column} - set(dataset.columns)
+    if missing_columns:
+        raise ValueError(f"Columns not found in dataset: {sorted(missing_columns)}")
+
+    if position_offsets is None and position_maps is None:
+        raise ValueError(
+            "At least one of position_offsets or position_maps must be provided"
+        )
+
+    result = dataset.copy()
+    position_offsets = position_offsets or {}
+    position_maps = position_maps or {}
+
+    mutation_pattern = re.compile(r"^([A-Z\*_])(\d+)([A-Z\*_])$")
+
+    def remap_mutation(name: Any, mutation: Any) -> Any:
+        if pd.isna(mutation):
+            return mutation
+
+        mutation = str(mutation).strip()
+        if not mutation or mutation == "WT" or pd.isna(name):
+            return mutation
+
+        offset = position_offsets.get(name)
+        position_map = position_maps.get(name)
+
+        if offset is None and position_map is None:
+            return mutation
+
+        remapped_mutations = []
+
+        for token in mutation.split(mutation_separator):
+            token = token.strip()
+            match = mutation_pattern.fullmatch(token)
+
+            if match is None:
+                if strict:
+                    raise ValueError(
+                        f"Invalid mutation {token!r} for "
+                        f"{name_column}={name!r}"
+                    )
+                remapped_mutations.append(token)
+                continue
+
+            wt, position, mutant = match.groups()
+            old_position = int(position)
+
+            if position_map is not None and old_position in position_map:
+                new_position = position_map[old_position]
+            elif offset is not None:
+                new_position = old_position + offset
+            elif strict:
+                raise ValueError(
+                    f"No position mapping for position {old_position} "
+                    f"when {name_column}={name!r}"
+                )
+            else:
+                new_position = old_position
+
+            if new_position < 0:
+                raise ValueError(
+                    f"Remapped position cannot be negative: "
+                    f"{old_position} -> {new_position}"
+                )
+
+            remapped_mutations.append(f"{wt}{new_position}{mutant}")
+
+        return mutation_separator.join(remapped_mutations)
+
+    result[mutation_column] = [
+        remap_mutation(name, mutation)
+        for name, mutation in zip(
+            result[name_column],
+            result[mutation_column],
+        )
+    ]
+
+    return result

@@ -138,7 +138,7 @@ See the [Data Cleaners Usage Guide](https://xulab-research.github.io/MutCleaner/
     <tr>
       <td>ArchStabMS1E10 Epistasis Dataset</td>
       <td><a href="https://doi.org/10.1038/s41586-024-07966-0">The genetic architecture of protein stability</a></td>
-      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Dataset.csv">ArchStabMS1E10_Epistasis_Dataset.csv</a></td>
+      <td><a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset.csv">ArchStabMS1E10_Epistasis_Sup4_Dataset.csv</a>,<a href="https://huggingface.co/datasets/xulab-research/MutCleaner/blob/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset.csv">ArchStabMS1E10_Epistasis_Sup5_Dataset.csv</a></td>
     </tr>
     <tr>
       <td>Antitoxin ParD3 Epistasis Dataset</td>

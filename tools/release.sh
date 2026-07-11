@@ -77,7 +77,7 @@ twine check dist/*
 echo "[9/9] Pushing and uploading..."
 git push origin main
 git push origin "v$VERSION"
-# twine upload dist/*
+
 
 echo "========================================"
 echo "Release v$VERSION completed!"

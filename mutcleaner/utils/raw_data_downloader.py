@@ -579,26 +579,28 @@ def download_ddg_dtm_source_file(
 
 
 def download_archstabms1e10_source_file(
-    dir: str, *, overwrite: bool = False
+    dir: str, *, overwrite: bool = False, sub_dataset: Optional[str] = None
 ) -> Dict[str, str]:
     """
-    Download the source file for ArchStabMS1E10 dataset from the original source.
+    Download the source files for the ArchStabMS1E10 dataset.
 
     Parameters
     ----------
     dir : str
-        The target directory where the file will be saved
+        The target directory where the files will be saved.
     overwrite : bool, default=False
-        Whether to overwrite the file if it already exists. Default is False.
+        Whether to overwrite existing files.
+    sub_dataset : Optional[str], default=None
+        Name of the sub-dataset to download. If None, all registered
+        ArchStabMS1E10 source files are downloaded.
 
     Returns
     -------
     Dict[str, str]
-        key: file name,
-        value: file path pointing to ArchStabMS1E10 Epistasis Dataset source file
+        Mapping from file names to downloaded local file paths.
     """
     return download_source_file_from_huggingface(
-        "ArchStabMS1E10 Epistasis Dataset", dir, overwrite=overwrite
+        "ArchStabMS1E10 Epistasis Dataset", dir, overwrite=overwrite, sub_dataset=sub_dataset
     )
 
 
@@ -622,7 +624,7 @@ def download_human_myoglobin_source_file(
         value: file path pointing to HumanMyoglobin dataset source file
     """
     return download_source_file_from_huggingface(
-        "Human Myoglobin Epistasis Dataset", dir, overwrite=overwrite
+        "Human Myoglobin Epistasis Dataset", dir, overwrite=overwrite, sub_dataset="Human Myoglobin Epistasis Dataset"
     )
 
 

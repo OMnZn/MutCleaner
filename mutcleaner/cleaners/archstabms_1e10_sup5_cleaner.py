@@ -1,20 +1,28 @@
-# mutcleaner/cleaners/archstabms_1e10_cleaner.py
+# mutcleaner/cleaners/archstabms_1e10_sup5_cleaner.py
 from __future__ import annotations
 
+import logging
 import pandas as pd
+from pathlib import Path
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
-from pathlib import Path
-import logging
 
 from .basic_cleaners import (
     read_dataset,
-    extract_and_rename_columns,
-    filter_and_clean_data,
+    merge_columns,
     convert_data_types,
+    validate_mutations,
+    filter_and_clean_data,
+    extract_and_rename_columns,
+    apply_mutations_to_sequences,
+    remap_mutation_positions_by_name,
     convert_to_mutation_dataset_format,
 )
-from .archstabms_1e10_custom_cleaners import compute_mutations
+
+from .archstabms_1e10_custom_cleaners import (
+    add_wild_type_sequences_by_library,
+    convert_pairwise_couplings_to_ddg,
+)
 
 from .base_config import BaseCleanerConfig
 
@@ -25,9 +33,9 @@ if TYPE_CHECKING:
     from typing import Callable, Optional, Tuple, Dict, Union, Any, List
 
 __all__ = [
-    "ArchStabMS1E10CleanerConfig",
-    "create_archstabms_1e10_cleaner",
-    "clean_archstabms_1e10_dataset",
+    "ArchStabMS1E10CleanerSup5Config",
+    "create_archstabms_1e10_sup5_cleaner",
+    "clean_archstabms_1e10_sup5_dataset",
 ]
 
 
@@ -38,9 +46,25 @@ def __dir__() -> List[str]:
 # Create module logger
 logger = logging.getLogger(__name__)
 
+GRB2_SH3_WT_SEQUENCE = (
+    "TYVQALFDFDPQEDGELGFRRGDFIHVMDNSDPNWWKGACHGQTGMFPRNYVTPVN"
+)
+
+SRC_WT_SEQUENCE = (
+    "MGSNKSKPKDASQRRRSLEPAENVHGAGGGAFPASQTPSKPASADGHRGPSAAFAPAAAEPK"
+    "LFGGFNSSDTVTSPQRAGPLAGGVTTFVALYDYESRTETDLSFKKGERLQIVNNTEGDWWLA"
+    "HSLSTGQTGYIPSNYVAPSDSIQAEEWYFGKITRRESERLLLNAENPRGTFLVRESETTKGAY"
+    "CLSVSDFDNAKGLNVKHYKIRKLDSGGFYITSRTQFNSLQQLVAYYSKHADGLCHRLTTVCPT"
+    "SKPQTQGLAKDAWEIPRESLRLEVKLGQGCFGEVWMGTWNGTTRVAIKTLKPGTMSPEAFLQ"
+    "EAQVMKKLRHEKLVQLYAVVSEEPIYIVTEYMSKGSLLDFLKGETGKYLRLPQLVDMAAQIAS"
+    "GMAYVERMNYVHRDLRAANILVGENLVCKVADFGLARLIEDNEYTARQGAKFPIKWTAPEAAL"
+    "YGRFTIKSDVWSFGILLTELTTKGRVPYPGMVNREVLDQVERGYRMPCPPECPESLHDLMCQC"
+    "WRKEPEERPTFEYLQAFLEDYFTSTEPQYQPGENL"
+)
+
 
 @dataclass
-class ArchStabMS1E10CleanerConfig(BaseCleanerConfig):
+class ArchStabMS1E10CleanerSup5Config(BaseCleanerConfig):
     """
     Configuration class for ArchStabMS1E10 dataset cleaner.
     Inherits from BaseCleanerConfig and adds ArchStabMS1E10-specific configuration options.
@@ -69,28 +93,37 @@ class ArchStabMS1E10CleanerConfig(BaseCleanerConfig):
     column_mapping: Dict[str, str] = field(
         default_factory=lambda: {
             "name": "name",
-            "WT": "WT",
-            "full_aa_seq": "mut_seq",
-            "fitness": "fitness",
+            "id_ref": "mut_info",
+            "mean_kcal/mol": "label",
+            "wt_sequence": "wt_sequence",
         }
     )
 
     # Data filtering configuration
     filters: Dict[str, Callable] = field(
-        default_factory=lambda: {"name": lambda x: x != "1_Abundance"}
+        default_factory=lambda: {"conf": lambda x: x == True}
+    )
+
+    library_sequences: Dict[int, str] = field(
+        default_factory=lambda: {
+            1: GRB2_SH3_WT_SEQUENCE,
+            2: GRB2_SH3_WT_SEQUENCE,
+            3: GRB2_SH3_WT_SEQUENCE,
+            4: SRC_WT_SEQUENCE,
+        }
     )
 
     # Type conversion configuration
     type_conversions: Dict[str, str] = field(
-        default_factory=lambda: {"fitness": "float"}
+        default_factory=lambda: {"label": "float"}
     )
 
     # Score columns configuration
-    label_columns: List[str] = field(default_factory=lambda: ["fitness"])
-    primary_label_column: str = "fitness"
+    label_columns: List[str] = field(default_factory=lambda: ["label"])
+    primary_label_column: str = "label"
 
     # Override default pipeline name
-    pipeline_name: str = "archstabms1e10_cleaner"
+    pipeline_name: str = "archstabms1e10_sup5_cleaner pipeline"
 
     def validate(self) -> None:
         """Validate ArchStabMS1E10CleanerConfig
@@ -113,16 +146,16 @@ class ArchStabMS1E10CleanerConfig(BaseCleanerConfig):
             )
 
         # Validate column mapping
-        required_mappings = {"name", "full_aa_seq", "fitness", "WT"}
+        required_mappings = {"name", "mean_kcal/mol", "id_ref"}
         missing = required_mappings - set(self.column_mapping.keys())
         if missing:
             raise ValueError(f"Missing required column mappings: {missing}")
 
-
-def create_archstabms_1e10_cleaner(
+    
+def create_archstabms_1e10_sup5_cleaner(
     dataset_or_path: Optional[Union[pd.DataFrame, str, Path]] = None,
     config: Optional[
-        Union[ArchStabMS1E10CleanerConfig, Dict[str, Any], str, Path]
+        Union[ArchStabMS1E10CleanerSup5Config, Dict[str, Any], str, Path]
     ] = None,
 ) -> Pipeline:
     """Create ArchStabMS1E10 dataset cleaning piipeline
@@ -131,7 +164,7 @@ def create_archstabms_1e10_cleaner(
     ----------
     dataset_or_path : Optional[Union[pd.DataFrame, str, Path]], default=None
         Raw dataset DataFrame or file path to archstams 1e10 dataset
-    config : Optional[Union[ArchStabMS1E10CleanerConfig, Dict[str, Any], str, Path]]. default=None
+    config : Optional[Union[ArchStabMS1E10CleanerSup5Config, Dict[str, Any], str, Path]]. default=None
         Configuration for the cleaing pipeline. Can be:
         - CDNAProtelysisCleanerConfig object
         - Dictionary with configuration parameters (merged with defaults)
@@ -152,18 +185,18 @@ def create_archstabms_1e10_cleaner(
     """
     # Handle configuration parameter
     if config is None:
-        final_config = ArchStabMS1E10CleanerConfig()
-    elif isinstance(config, ArchStabMS1E10CleanerConfig):
+        final_config = ArchStabMS1E10CleanerSup5Config()
+    elif isinstance(config, ArchStabMS1E10CleanerSup5Config):
         final_config = config
     elif isinstance(config, dict):
-        default_config = ArchStabMS1E10CleanerConfig()
+        default_config = ArchStabMS1E10CleanerSup5Config()
         final_config = default_config.merge(config)
     elif isinstance(config, (str, Path)):
         # Load from file
-        final_config = ArchStabMS1E10CleanerConfig.from_json(config)
+        final_config = ArchStabMS1E10CleanerSup5Config.from_json(config)
     else:
         raise TypeError(
-            f"config must be ProteinGymCleanerConfig, dict, str, Path or None, got {type(config)}"
+            f"config must be ArchStabMS1E10CleanerSup5Config, dict, str, Path or None, got {type(config)}"
         )
 
     # Log configuration summary
@@ -183,25 +216,53 @@ def create_archstabms_1e10_cleaner(
                 filters=final_config.filters,
             )
             .delayed_then(
+                add_wild_type_sequences_by_library,
+                library_sequences=final_config.library_sequences,
+            )
+            .delayed_then(
+                merge_columns,
+                columns_to_merge=["library", "trait_name"],
+                new_column_name="name",
+                drop_original=True,
+            )
+            .delayed_then(
                 extract_and_rename_columns,
                 column_mapping=final_config.column_mapping,
+            )
+            .delayed_then(
+                validate_mutations,
+                mutation_sep="_",
+            )
+            .delayed_then(
+                remap_mutation_positions_by_name,
+                position_offsets={"4_Folding": 3},
+                name_column=final_config.column_mapping.get("name", "name"),
+                mutation_column=final_config.column_mapping.get("id_ref", "id_ref")
             )
             .delayed_then(
                 convert_data_types,
                 type_conversions=final_config.type_conversions,
             )
             .delayed_then(
-                compute_mutations,
-                WT_column=final_config.column_mapping.get("WT", "WT"),
-                mut_seq=final_config.column_mapping.get("mut_seq", "mut_seq"),
-                name_column=final_config.column_mapping.get("name", "name"),
+                convert_pairwise_couplings_to_ddg,
+                group_columns=[
+                    final_config.column_mapping.get("name", "name")
+                ],
+                mutation_column=final_config.column_mapping.get("id_ref", "id_ref"),
+                label_column=final_config.column_mapping.get("mean_kcal/mol", "mean_kcal/mol"),
+            )
+            .delayed_then(
+                apply_mutations_to_sequences,
+                mutation_column=final_config.column_mapping.get("id_ref", "id_ref"),
+                sequence_column="wt_sequence",
             )
             .delayed_then(
                 convert_to_mutation_dataset_format,
-                mutated_sequence_column=final_config.column_mapping.get(
-                    "full_aa_seq", "full_aa_seq"
-                ),
-                label_column=final_config.primary_label_column,
+                name_column=final_config.column_mapping.get("name", "name"),
+                mutation_column=final_config.column_mapping.get("id_ref", "id_ref"),
+                sequence_column=final_config.column_mapping.get("wt_sequence", "wt_sequence"),
+                mutated_sequence_column=final_config.column_mapping.get("mut_seq", "mut_seq"),
+                label_column=final_config.column_mapping.get("mean_kcal/mol", "mean_kcal/mol"),
                 is_zero_based=True,
             )
         )
@@ -221,7 +282,7 @@ def create_archstabms_1e10_cleaner(
         raise RuntimeError(f"Error in creating archstabms cleaning pipeline: {str(e)}")
 
 
-def clean_archstabms_1e10_dataset(
+def clean_archstabms_1e10_sup5_dataset(
     pipeline: Pipeline,
 ) -> Tuple[Pipeline, MutationDataset]:
     """Clean ArchStabMS1E10 dataset using configurable pipeline
@@ -241,22 +302,21 @@ def clean_archstabms_1e10_dataset(
     --------
     Use default configuration:
 
-    >>> pipeline = create_archstabms_1e10_cleaner(df)  # df is raw ArchStabMS1E10 dataset file
+    >>> pipeline = create_archstabms_1e10_sup5_cleaner(df)  # df is raw ArchStabMS1E10 dataset file
 
     Use partial configuration:
 
-    >>> pipeline = create_archstabms_1e10_cleaner(df, config={
+    >>> pipeline = create_archstabms_1e10_sup5_cleaner(df, config={
     ...     "column_mapping": {
-    ...         "name": "name_column",
-    ...         "WT":"wt",
-    ...         "full_aa_seq": "mut_seq",
-    ...         "fitness": "fitness",
-    ... }})
+    ...         "mean_kcal/mol": "label",
+    ...         "id_ref": "mutation_name",
+    ...     },
+    ... })
 
     Load configuration from file:
 
-    >>> pipeline = create_archstabms_1e10_cleaner(df, config="config.json")
-    >>> pipeline, dataset = clean_archstabms_1e10_dataset(pipeline)
+    >>> pipeline = create_archstabms_1e10_sup5_cleaner(df, config="config.json")
+    >>> pipeline, dataset = clean_archstabms_1e10_sup5_dataset(pipeline)
     """
     try:
         # Run pipeline

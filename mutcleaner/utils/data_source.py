@@ -128,9 +128,24 @@ DATASETS = {
         "paper_title": "The genetic architecture of protein stability",
         "official_doi": "https://doi.org/10.1038/s41586-024-07966-0",
         "huggingface_repos": [
-            "datasets/xulab-research/MutCleaner/resolve/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Dataset.csv?download=true"
+            "datasets/xulab-research/MutCleaner/resolve/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset.csv?download=true",
+            "datasets/xulab-research/MutCleaner/resolve/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset.csv?download=true",
         ],
-        "file_name": ["ArchStabMS1E10_Epistasis_Dataset.csv"],
+        "file_name": ["ArchStabMS1E10_Epistasis_Sup4_Dataset.csv","ArchStabMS1E10_Epistasis_Sup5_Dataset.csv"],
+        "sub_datasets": {
+            "ArchStabMS1E10_Epistasis_Sup4_Dataset": {
+                "huggingface_repos": [
+                    "datasets/xulab-research/MutCleaner/resolve/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset.csv?download=true"
+                ],
+                "file_name": ["ArchStabMS1E10_Epistasis_Sup4_Dataset.csv"],
+            },
+            "ArchStabMS1E10_Epistasis_Sup5_Dataset": {
+                "huggingface_repos": [
+                    "datasets/xulab-research/MutCleaner/resolve/main/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset.csv?download=true"
+                ],
+                "file_name": ["ArchStabMS1E10_Epistasis_Sup5_Dataset.csv"],
+            }
+        }
     },
     "Human Myoglobin Epistasis Dataset":{
         "paper_title": "Decoding Stability and Epistasis in Human Myoglobin by Deep Mutational Scanning and Codon-level Machine Learning",

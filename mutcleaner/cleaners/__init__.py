@@ -27,10 +27,15 @@ from .ddg_dtm_cleaners import (
     clean_ddg_dtm_dataset,
     create_ddg_dtm_cleaner,
 )
-from .archstabms_1e10_cleaner import (
-    ArchStabMS1E10CleanerConfig,
-    clean_archstabms_1e10_dataset,
-    create_archstabms_1e10_cleaner,
+from .archstabms_1e10_sup4_cleaner import (
+    ArchStabMS1E10CleanerSup4Config,
+    clean_archstabms_1e10_sup4_dataset,
+    create_archstabms_1e10_sup4_cleaner,
+)
+from .archstabms_1e10_sup5_cleaner import (
+    ArchStabMS1E10CleanerSup5Config,
+    clean_archstabms_1e10_sup5_dataset,
+    create_archstabms_1e10_sup5_cleaner,
 )
 from .antitoxin_pard3_cleaner import (
     AntitoxinParD3CleanerConfig,
@@ -85,12 +90,18 @@ __all__ = [
     "HumanDomainomeSup2CleanerConfig",
     "create_human_domainome_sup2_cleaner",
     "clean_human_domainome_sup2_dataset",
+    "HumanDomainomeSup4CleanerConfig",
+    "clean_human_domainome_sup4_dataset",
+    "create_human_domainome_sup4_cleaner",
     "DdgDtmCleanerConfig",
     "create_ddg_dtm_cleaner",
     "clean_ddg_dtm_dataset",
-    "ArchStabMS1E10CleanerConfig",
-    "create_archstabms_1e10_cleaner",
-    "clean_archstabms_1e10_dataset",
+    "ArchStabMS1E10CleanerSup4Config",
+    "create_archstabms_1e10_sup4_cleaner",
+    "clean_archstabms_1e10_sup4_dataset",
+    "ArchStabMS1E10CleanerSup5Config",
+    "clean_archstabms_1e10_sup5_dataset",
+    "create_archstabms_1e10_sup5_cleaner",
     "AntitoxinParD3CleanerConfig",
     "create_antitoxin_pard3_cleaner",
     "clean_antitoxin_pard3_dataset",

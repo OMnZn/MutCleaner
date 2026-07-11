@@ -392,41 +392,41 @@ See {py:class}`mutcleaner.cleaners.DdgDtmCleanerConfig` for details.
 
 ## ArchStabMS1E10 Epistasis Dataset
 
-### Basic Usage
+### ArchStabMS1E10 Epistasis Sup4 Dataset
 
 The following example shows the complete workflow for downloading, cleaning,
-saving the cleaned ArchStabMS1E10 Epistasis dataset, and exporting the
+saving the cleaned ArchStabMS1E10 Epistasis Sup4 dataset, and exporting the
 cleaning artifacts:
 ```python
 import pickle
 from pathlib import Path
 from mutcleaner import download_archstabms1e10_source_file
 from mutcleaner.cleaners import (
-    create_archstabms_1e10_cleaner,
-    clean_archstabms_1e10_dataset,
+    create_archstabms_1e10_sup4_cleaner,
+    clean_archstabms_1e10_sup4_dataset,
 )
 
 
 def main():
     # Prepare dataset
-    download_archstabms1e10_source_file("raw_dataset/ArchStabMS1E10_Epistasis_Dataset", overwrite=True)
+    download_archstabms1e10_source_file("raw_dataset/ArchStabMS1E10_Epistasis_Dataset", overwrite=True, sub_dataset="ArchStabMS1E10_Epistasis_Sup4_Dataset")
 
     # File settings
-    dataset_filepath = Path("raw_dataset/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Dataset.csv")
-    artifact_path = Path("logs/ArchStabMS1E10_Epistasis_Dataset/artifacts.pkl")
-    artifact_csv_dir = Path("logs/ArchStabMS1E10_Epistasis_Dataset")
+    dataset_filepath = Path("raw_dataset/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset.csv")
+    artifact_path = Path("logs/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset/artifacts.pkl")
+    artifact_csv_dir = Path("logs/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset")
 
     artifact_csv_dir.mkdir(parents=True, exist_ok=True)
 
     # Clean data
-    archstabms_cleaning_pipeline = create_archstabms_1e10_cleaner(dataset_filepath)
-    archstabms_cleaning_pipeline, archstabms_dataset = clean_archstabms_1e10_dataset(
-        archstabms_cleaning_pipeline
+    archstabms1e10_sup4_cleaning_pipeline = create_archstabms_1e10_sup4_cleaner(dataset_filepath)
+    archstabms1e10_sup4_cleaning_pipeline, archstabms1e10_sup4_dataset = clean_archstabms_1e10_sup4_dataset(
+        archstabms1e10_sup4_cleaning_pipeline
     )
 
     # Save data
-    archstabms_dataset.save("cleaned_dataset/cleaned_ArchStabMS1E10_Epistasis_Dataset")
-    archstabms_cleaning_pipeline.save_artifacts(artifact_path)
+    archstabms1e10_sup4_dataset.save("cleaned_dataset/cleaned_ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup4_Dataset")
+    archstabms1e10_sup4_cleaning_pipeline.save_artifacts(artifact_path)
 
     # open the pickle file
     with open(artifact_path, "rb") as file:
@@ -445,7 +445,61 @@ if __name__ == "__main__":
 
 ### Advanced Settings
 
-See {py:class}`mutcleaner.cleaners.ArchStabMS1E10CleanerConfig` for details.
+See {py:class}`mutcleaner.cleaners.ArchStabMS1E10CleanerSup4Config` for details.
+
+### ArchStabMS1E10 Epistasis Sup5 Dataset
+The following example shows the complete workflow for downloading, cleaning,
+saving the cleaned ArchStabMS1E10 Epistasis Sup5 dataset, and exporting the
+cleaning artifacts:
+```python
+import pickle
+from pathlib import Path
+from mutcleaner import download_archstabms1e10_source_file
+from mutcleaner.cleaners import (
+    create_archstabms_1e10_sup5_cleaner,
+    clean_archstabms_1e10_sup5_dataset,
+)
+
+
+def main():
+    # Prepare dataset
+    download_archstabms1e10_source_file("raw_dataset/ArchStabMS1E10_Epistasis_Dataset", overwrite=True, sub_dataset="ArchStabMS1E10_Epistasis_Sup5_Dataset")
+
+    # File settings
+    dataset_filepath = Path("raw_dataset/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset.csv")
+    artifact_path = Path("logs/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset/artifacts.pkl")
+    artifact_csv_dir = Path("logs/ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset/")
+
+    artifact_csv_dir.mkdir(parents=True, exist_ok=True)
+
+    # Clean data
+    archstabms1e10_sup5_cleaning_pipeline = create_archstabms_1e10_sup5_cleaner(dataset_filepath)
+    archstabms1e10_sup5_cleaning_pipeline, archstabms1e10_sup5_dataset = clean_archstabms_1e10_sup5_dataset(
+        archstabms1e10_sup5_cleaning_pipeline
+    )
+
+    # Save data
+    archstabms1e10_sup5_dataset.save("cleaned_dataset/cleaned_ArchStabMS1E10_Epistasis_Dataset/ArchStabMS1E10_Epistasis_Sup5_Dataset/")
+    archstabms1e10_sup5_cleaning_pipeline.save_artifacts(artifact_path)
+
+    # open the pickle file
+    with open(artifact_path, "rb") as file:
+        artifacts = pickle.load(file)
+
+    for artifact_name, artifact_df in artifacts.items():
+        artifact_df.to_csv(f"{artifact_csv_dir}/{artifact_name}.csv", index=False)
+
+
+if __name__ == "__main__":
+    import multiprocessing
+
+    multiprocessing.freeze_support()
+    main()
+```
+
+### Advanced Settings
+
+See {py:class}`mutcleaner.cleaners.ArchStabMS1E10CleanerSup5Config` for details.
 
 ## Antitoxin ParD3 Epistasis Dataset
 
