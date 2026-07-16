@@ -218,7 +218,9 @@ def validate_wt_sequence_grouped(
         if mutants.empty and has_wt:
             return [wt_row_dict], "success"
         elif mutants.empty and not has_wt:
-            return [], "failed"
+            error_row = original_group.iloc[0].to_dict()
+            error_row["error_message"] = "WT row not found and no mutants available to infer WT sequence"
+            return [error_row], "failed"
 
         # Infer wild-type sequences
         inferred_wt_seqs = set()
