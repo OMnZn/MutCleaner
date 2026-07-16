@@ -198,13 +198,21 @@ def validate_wt_sequence_grouped(
 ) -> Tuple[List[Dict[str, Any]], str]:
     """
     Validate one protein/name group by comparing the explicit WT row with
-    the WT sequence inferred from each mutant row.If explicit WT row is missing, synthesize it using the inferred sequence.
+    the WT sequence inferred from each mutant row.
+    If explicit WT row is missing, synthesize it using the inferred sequence.
     """
     protein_name, original_group = group_data
 
     try:
         # Check WT sequence is valid
         wt_rows = original_group[original_group[mutation_column] == wt_identifier]
+
+        # Fail immediately if multiple explicit WT rows exist
+        if len(wt_rows) > 1:
+            error_row = wt_rows.iloc[0].to_dict()
+            error_row["error_message"] = "Multiple explicit WT rows"
+            return [error_row], "failed"
+
         has_wt = not wt_rows.empty
 
         # Extract original WT sequence
@@ -218,9 +226,7 @@ def validate_wt_sequence_grouped(
         if mutants.empty and has_wt:
             return [wt_row_dict], "success"
         elif mutants.empty and not has_wt:
-            error_row = original_group.iloc[0].to_dict()
-            error_row["error_message"] = "WT row not found and no mutants available to infer WT sequence"
-            return [error_row], "failed"
+            return [], "failed"
 
         # Infer wild-type sequences
         inferred_wt_seqs = set()
